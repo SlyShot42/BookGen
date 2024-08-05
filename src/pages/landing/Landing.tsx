@@ -3,18 +3,16 @@ import SelectionCards from "./SelectionCards";
 
 function Landing() {
   return (
-    <div className="flex justify-center items-center h-full">
-      <div
-        data-theme="autumn"
-        className="hero bg-neutral rounded-box flex flex-col min-h-fit"
-      >
-        <div className="hero-content text-center grow">
-          <div className="flex flex-row">
-            <SelectionCards />
-          </div>
-        </div>
+    <section className="py-[--section-padding] h-full">
+      <div className="flex flex-col justify-around font-black  border-green-400 w-full max-w-7xl m-auto h-full">
+        <h1 >BookGen&#128214;</h1>
+        <div className="divider"></div>
+        <form>
+          <textarea className="textarea" placeholder="Enter the topic you want to study..."></textarea>
+          <button className="btn">Generate Table of Contents</button>
+        </form>
       </div>
-    </div>
+    </section>
   );
 }
 
