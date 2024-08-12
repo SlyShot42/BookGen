@@ -6,11 +6,30 @@ import React from "react";
 import { FormEvent } from "react";
 import { useImmerReducer } from 'use-immer';
 import OpenAI from "openai";
+import { z } from "zod";
+import { zodResponseFormat } from "openai/helpers/zod";
+import { useNavigate } from 'react-router-dom';
 // import dotenv from 'dotenv';
 // dotenv.config();
 // console.log(process.env);
 // import * as dotenv from 'dotenv';
 // dotenv.config();
+const SectionDetails = z.object({
+  number: z.number(),
+  title: z.string(),
+});
+
+const ChapterDetails = z.object({
+  number: z.number(),
+  title: z.string(),
+  sections: z.array(SectionDetails),
+});
+
+const TableOfContents = z.object({
+  chapters: z.array(ChapterDetails)
+});
+
+export { SectionDetails, ChapterDetails };
 
 const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
 
@@ -19,19 +38,27 @@ function Landing() {
   const [topic, dispatchTopic] = useImmerReducer(topicReducer, '');
   const [loading, dispatchLoad] = useImmerReducer(loadingReducer, false);
 
+  const navigate = useNavigate();
+
 
   const handleTopicSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatchLoad({ type: 'set loading', setLoad: true });
 
     try {
-      const completion = await openai.chat.completions.create({
-        messages: [{ role: "system", content: "You are a helpful assistant." }],
-        model: "gpt-4o-mini",
+      const completion = await openai.beta.chat.completions.parse({
+        model: "gpt-4o-2024-08-06",
+        messages: [
+          { role: "system", content: "You are a course textbook writing expert" },
+          { role: "user", content: `Generate the table of contents (include chapter and sections) for a textbook on ${topic}` },
+        ],
+        response_format: zodResponseFormat(TableOfContents, "table_of_contents"),
       });
 
-      console.log(completion.choices[0]);
+
+      console.log(completion.choices[0].message.parsed);
       // Perform any action with the response here
+      navigate('/book', { state: { tableOfContents: completion.choices[0].message.parsed?.chapters } });
     } catch (error) {
       console.error("Error fetching completion: ", error);
     } finally {

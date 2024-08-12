@@ -11,11 +11,12 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "openai": "^4.0.0",
+    "openai": "^4.55.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.1",
-    "use-immer": "^0.10.0"
+    "use-immer": "^0.10.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
