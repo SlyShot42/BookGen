@@ -68,23 +68,21 @@ function Landing() {
 
   return (
     <section className="py-[--section-padding] h-full" data-theme="autumn">
-      <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5">
+      <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5 text-2xl md:text-1xl lg:text-3xl xl:text-4xl">
         <h1 className="text-center">BookGen&#128214;</h1>
-        <div className="divider"></div>
+        <div className="divider my-1"></div>
 
         {/* there probably needs to be handler function here for the form submission */}
         <form 
-          className="flex flex-col justify-around px-2.5 space-y-4"
+          className="flex flex-col justify-around px-2.5 space-y-4 h-full"
           onSubmit={handleTopicSubmit}
         >
           <label className="hidden">Enter Topic:</label>
           <textarea 
-            className="textarea textarea-primary textarea-md font-mono text-neutral font-bold min-h-52" 
+            className="textarea textarea-primary textarea-md font-mono text-neutral font-bold h-full" 
             placeholder="Enter the topic you want to study..." 
             onChange={(e) => dispatchTopic({ type: 'set topic', newTopic: e.target.value,})}
             value={topic}
-            cols={50}
-            rows={10}
           />
           <button type="submit" className="btn btn-wide btn-primary self-center">{loading ? <><span className="loading loading-spinner"></span>loading</> : "Generate Table of Contents"}</button>
         </form>
