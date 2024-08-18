@@ -84,7 +84,7 @@ function Landing() {
             onChange={(e) => dispatchTopic({ type: 'set topic', newTopic: e.target.value,})}
             value={topic}
           />
-          <button type="submit" className="btn btn-wide btn-primary self-center">{loading ? <><span className="loading loading-spinner"></span>loading</> : "Generate Table of Contents"}</button>
+          <button type="submit" className="btn btn-wide btn-primary self-center">{loading ? <><span className="loading loading-spinner"></span>Generating</> : "Generate Table of Contents"}</button>
         </form>
         {/* <h1>{topic}</h1> */}
       </div>
