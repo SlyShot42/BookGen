@@ -4,9 +4,12 @@ import { z } from 'zod';
 import { SectionDetails, ChapterDetails } from '../landing/Landing';  
 import { useImmerReducer } from 'use-immer';
 import { useRef } from 'react';
+import OpenAI from 'openai';
 
 type ChapterDetailsType = z.infer<typeof ChapterDetails>;
 type SectionDetailsType = z.infer<typeof SectionDetails>;
+
+const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
 
 function Book() {
   const location = useLocation();

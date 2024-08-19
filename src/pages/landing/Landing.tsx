@@ -3,7 +3,7 @@ import React from "react";
 // import {useState} from 'react';
 // import { useEffect } from "react";
 // import { ChangeEvent } from "react";
-import { FormEvent } from "react";
+
 import { useImmerReducer } from 'use-immer';
 import OpenAI from "openai";
 import { z } from "zod";
@@ -41,7 +41,7 @@ function Landing() {
   const navigate = useNavigate();
 
 
-  const handleTopicSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleTopicSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatchLoad({ type: 'set loading', setLoad: true });
 
@@ -92,7 +92,7 @@ function Landing() {
   );
 }
 
-function loadingReducer(draft: boolean, action: { type: string; setLoad: boolean; }) {
+function loadingReducer(_: boolean, action: { type: string; setLoad: boolean; }) {
   switch (action.type) {
     case 'set loading': {
       return action.setLoad;
@@ -103,7 +103,7 @@ function loadingReducer(draft: boolean, action: { type: string; setLoad: boolean
   }
 }
 
-function topicReducer(draft: string, action: { type: string; newTopic: string; }) {
+function topicReducer(_: string, action: { type: string; newTopic: string; }) {
   switch (action.type) {
     case 'set topic': {
       return action.newTopic;
