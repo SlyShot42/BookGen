@@ -26,6 +26,7 @@ const ChapterDetails = z.object({
   sections: z.array(SectionDetails),
 });
 
+type ChapterDetailsType = z.infer<typeof ChapterDetails>;
 
 const TableOfContents = z.object({
   chapters: z.array(ChapterDetails)
@@ -40,7 +41,7 @@ function Landing() {
   const [topic, dispatchTopic] = useImmerReducer(topicReducer, '');
   const [loading, dispatchLoad] = useImmerReducer(loadingReducer, false);
   const [generateFull, dispatchGenerateFull] = useImmerReducer(generateFullReducer, false);
-  const chapters = useRef<object[] | null>();
+  const chapters = useRef<ChapterDetailsType[] | null>(null);
 
   const navigate = useNavigate();
 
@@ -106,7 +107,7 @@ function Landing() {
       </div>
       <dialog id="my_modal" className="modal modal-bottom sm:modal-middle" onCancel={e => e.preventDefault()}>
       <div className="modal-box">
-        {generateFull ? <BookGenerator/> : 
+        {generateFull ? <BookGenerator chapters={chapters.current}/> : 
           <>
             <h3 className="font-bold text-lg">How much of your book do you want to generate?</h3>
             <p className="py-4">*Note: Generating a full book can take long depending on the number of sections in your book.</p>

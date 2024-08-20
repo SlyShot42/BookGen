@@ -15,7 +15,7 @@ function Book() {
   const chapters = location.state.tableOfContents;
   // const [chapterSelectionState, dispatchSelectionState] = useImmerReducer(chapterSelectionReducer, Array(chapters.length).fill(false));
   const chapterSelectionState = useRef(Array(chapters.length).fill(false));
-  const [sectionSelectionState, dispatchSectionSelectionState] = useImmerReducer(sectionSelectionReducer, chapters.map((_: void, i: number) => Array(chapters[i].sections.length).fill(false)));
+  const [sectionSelectionState, dispatchSectionSelectionState] = useImmerReducer(sectionSelectionReducer, chapters.map((chapter: ChapterDetailsType) => Array(chapter.sections.length).fill(false)));
 
   // console.log(chapterSelectionState);
   console.log(sectionSelectionState);
