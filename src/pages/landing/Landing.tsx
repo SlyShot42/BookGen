@@ -3,12 +3,13 @@ import React from "react";
 // import {useState} from 'react';
 // import { useEffect } from "react";
 // import { ChangeEvent } from "react";
-
+import { useRef } from "react";
 import { useImmerReducer } from 'use-immer';
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { useNavigate } from 'react-router-dom';
+import BookGenerator from "../../components/BookGenerator";
 // import dotenv from 'dotenv';
 // dotenv.config();
 // console.log(process.env);
@@ -25,6 +26,7 @@ const ChapterDetails = z.object({
   sections: z.array(SectionDetails),
 });
 
+
 const TableOfContents = z.object({
   chapters: z.array(ChapterDetails)
 });
@@ -37,6 +39,8 @@ const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API_KEY, dangero
 function Landing() {
   const [topic, dispatchTopic] = useImmerReducer(topicReducer, '');
   const [loading, dispatchLoad] = useImmerReducer(loadingReducer, false);
+  const [generateFull, dispatchGenerateFull] = useImmerReducer(generateFullReducer, false);
+  const chapters = useRef<object[] | null>();
 
   const navigate = useNavigate();
 
@@ -56,9 +60,13 @@ function Landing() {
       });
 
 
-      console.log(completion.choices[0].message.parsed);
+      // console.log(completion.choices[0].message.parsed);
       // Perform any action with the response here
-      navigate('/book', { state: { tableOfContents: completion.choices[0].message.parsed?.chapters } });
+      // navigate('/book', { state: { tableOfContents: completion.choices[0].message.parsed?.chapters } });
+      // console.log(typeof completion.choices[0].message.parsed?.chapters);
+      chapters.current = completion.choices[0].message.parsed?.chapters || null;
+      console.log(chapters.current);
+      (document.getElementById('my_modal') as HTMLDialogElement)?.showModal();
     } catch (error) {
       console.error("Error fetching completion: ", error);
     } finally {
@@ -66,20 +74,28 @@ function Landing() {
     }
   }
 
+  const handleFullGenerate = () => {
+    dispatchGenerateFull({ type: 'set generate full' });
+  }
+
+  const handleContentSelection = () => {
+    navigate('/book', { state: { tableOfContents: chapters.current } });
+  }
+
   return (
     <section className="py-[--section-padding] h-full" data-theme="autumn">
-      <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5 text-2xl md:text-1xl lg:text-3xl xl:text-4xl">
+      <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5 text-xl md:text-2xl lg:text-3xl xl:text-4xl">
         <h1 className="text-center">BookGen&#128214;</h1>
         <div className="divider my-1"></div>
 
         {/* there probably needs to be handler function here for the form submission */}
         <form 
-          className="flex flex-col justify-around px-2.5 space-y-4 h-full"
+          className="flex flex-col px-2.5 space-y-4 h-full"
           onSubmit={handleTopicSubmit}
         >
           <label className="hidden">Enter Topic:</label>
           <textarea 
-            className="textarea textarea-primary textarea-md font-mono text-neutral font-bold h-full" 
+            className="textarea textarea-primary textarea-md font-mono text-neutral font-bold h-full md:max-h-80 lg:max-h-52" 
             placeholder="Enter the topic you want to study..." 
             onChange={(e) => dispatchTopic({ type: 'set topic', newTopic: e.target.value,})}
             value={topic}
@@ -88,8 +104,38 @@ function Landing() {
         </form>
         {/* <h1>{topic}</h1> */}
       </div>
+      <dialog id="my_modal" className="modal modal-bottom sm:modal-middle" onCancel={e => e.preventDefault()}>
+      <div className="modal-box">
+        {generateFull ? <BookGenerator/> : 
+          <>
+            <h3 className="font-bold text-lg">How much of your book do you want to generate?</h3>
+            <p className="py-4">*Note: Generating a full book can take long depending on the number of sections in your book.</p>
+            <div className="modal-action">
+              <form 
+                method="dialog" 
+                className="flex flex-col justify-around space-y-2 w-full md:flex-row md:space-y-0"
+                onSubmit={e => e.preventDefault()}
+              >
+                <button className="btn btn-primary" onClick={handleFullGenerate}>Generate Full Book</button>
+                <button className="btn btn-secondary" onClick={handleContentSelection}>Go to Content Selection</button>
+              </form>
+            </div>
+          </>}
+        </div>
+      </dialog>
     </section>
   );
+}
+
+function generateFullReducer(_: boolean, action: { type: string}) {
+  switch (action.type) {
+    case 'set generate full': {
+      return true;
+    }
+    default: {
+      throw new Error(`Unhandled action type: ${action.type}`);
+    }
+  }
 }
 
 function loadingReducer(_: boolean, action: { type: string; setLoad: boolean; }) {

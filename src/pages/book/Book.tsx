@@ -4,12 +4,11 @@ import { z } from 'zod';
 import { SectionDetails, ChapterDetails } from '../landing/Landing';  
 import { useImmerReducer } from 'use-immer';
 import { useRef } from 'react';
-import OpenAI from 'openai';
+
 
 type ChapterDetailsType = z.infer<typeof ChapterDetails>;
 type SectionDetailsType = z.infer<typeof SectionDetails>;
 
-const openai = new OpenAI({ apiKey: import.meta.env.VITE_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
 
 function Book() {
   const location = useLocation();
@@ -21,8 +20,25 @@ function Book() {
   // console.log(chapterSelectionState);
   console.log(sectionSelectionState);
 
-  const handleContentSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleContentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // try {
+    //   const completion = await openai.beta.chat.completions.parse({
+    //     model: "gpt-4o-2024-08-06",
+    //     messages: [
+    //       { role: "system", content: "You are a course textbook writing expert" },
+    //       { role: "user", content: `Generate the table of contents (include chapter and sections) for a textbook on ${location.state.topic}` },
+    //     ],
+    //     response_format: zodResponseFormat(TableOfContents, "table_of_contents"),
+    //   });
+
+
+    // } catch (error) {
+    //   console.error("Error fetching completion: ", error);
+    // } finally {
+    //   // dispatchLoad({ type: 'set loading', setLoad: false });
+    // }
   }
 
   const handleChapterClick = (index: number) => {
