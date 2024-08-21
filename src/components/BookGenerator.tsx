@@ -20,11 +20,12 @@ function BookGenerator({chapters, topic, sectionSelections = null}: {chapters: C
 
   const [currentProgress, dispatchProgress] = useImmerReducer(progressReducer, 0);
 
-  // const sectionContent = useRef([[]]);
+  const sectionContent = useRef(chapters!.map((chapter: ChapterDetailsType) => Array(chapter.sections.length).fill('')));
   const currentIndex = useRef([0, 0]);
   
   useEffect(() => {
       const generateContent = async (title: string) => {
+        let content: string | null = "";
         try {
           const completion = await openai.chat.completions.create({
             model: "gpt-4o-2024-08-06",
@@ -44,19 +45,22 @@ function BookGenerator({chapters, topic, sectionSelections = null}: {chapters: C
             ],
             temperature: 0.4
           });
-          console.log(completion.choices[0].message.content);
+          console.log(completion.choices[0].message.content)
+          content = completion.choices[0].message.content;
         } catch(error) {
           console.error("Error fetching completion", error);
         } finally {
           dispatchProgress({ type: 'increment' });
         }
+        return content;
       }
       
     if (currentProgress < maxProgress) {
       if (sectionSelections) {
         const [chapterIndex, sectionIndex] = currentIndex.current;
         if (sectionSelections[chapterIndex][sectionIndex]) {
-          generateContent(chapters![chapterIndex].sections[sectionIndex].title);
+          sectionContent.current[chapterIndex][sectionIndex] = generateContent(chapters![chapterIndex].sections[sectionIndex].title);
+          
         }
 
         if (sectionIndex < sectionSelections[chapterIndex].length - 1) {
@@ -66,7 +70,7 @@ function BookGenerator({chapters, topic, sectionSelections = null}: {chapters: C
         }
       } else {
         const [chapterIndex, sectionIndex] = currentIndex.current;
-        generateContent(chapters![chapterIndex].sections[sectionIndex].title);
+        sectionContent.current[chapterIndex][sectionIndex] = generateContent(chapters![chapterIndex].sections[sectionIndex].title);
 
         if (sectionIndex < chapters![chapterIndex].sections.length - 1) {
           currentIndex.current = [chapterIndex, sectionIndex + 1];
