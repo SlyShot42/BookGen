@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { SectionDetails, ChapterDetails } from '../landing/Landing';  
 import { useImmerReducer } from 'use-immer';
 import { useRef } from 'react';
+import BookGenerator from '../../components/BookGenerator';
 
 
 type ChapterDetailsType = z.infer<typeof ChapterDetails>;
@@ -13,32 +14,18 @@ type SectionDetailsType = z.infer<typeof SectionDetails>;
 function Book() {
   const location = useLocation();
   const chapters = location.state.tableOfContents;
+  const topic = location.state.topic;
   // const [chapterSelectionState, dispatchSelectionState] = useImmerReducer(chapterSelectionReducer, Array(chapters.length).fill(false));
   const chapterSelectionState = useRef(Array(chapters.length).fill(false));
   const [sectionSelectionState, dispatchSectionSelectionState] = useImmerReducer(sectionSelectionReducer, chapters.map((chapter: ChapterDetailsType) => Array(chapter.sections.length).fill(false)));
-
+  // const [submitSelection, dispatchSubmitSelection] = useImmerReducer(submitSelectionReducer, false);
   // console.log(chapterSelectionState);
   console.log(sectionSelectionState);
 
   const handleContentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // try {
-    //   const completion = await openai.beta.chat.completions.parse({
-    //     model: "gpt-4o-2024-08-06",
-    //     messages: [
-    //       { role: "system", content: "You are a course textbook writing expert" },
-    //       { role: "user", content: `Generate the table of contents (include chapter and sections) for a textbook on ${location.state.topic}` },
-    //     ],
-    //     response_format: zodResponseFormat(TableOfContents, "table_of_contents"),
-    //   });
-
-
-    // } catch (error) {
-    //   console.error("Error fetching completion: ", error);
-    // } finally {
-    //   // dispatchLoad({ type: 'set loading', setLoad: false });
-    // }
+    // dispatchSubmitSelection({ type: 'set true' });
+    (document.getElementById('my_modal') as HTMLDialogElement)?.showModal();
   }
 
   const handleChapterClick = (index: number) => {
@@ -59,8 +46,8 @@ function Book() {
   return (
     <section className="h-full" data-theme="autumn">
       
-      <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5 md:text-2xl lg:text-3xl xl:text-4xl">
-        <h1 className="text-center">Book Content Selection</h1>
+      <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5">
+        <h1 className="text-center text-5xl lg:text-6xl xl:text-7xl">Book Content Selection</h1>
         <div className="divider my-1"></div>
 
         <form 
@@ -105,18 +92,22 @@ function Book() {
             </article>
           </div>
           <div className="divider my-1"></div>
-          <button className="btn btn-wide btn-primary self-center my-3">Generate Book</button>
+          <button type="submit" className="btn btn-wide btn-primary self-center my-3" >Generate Book</button>
         </form>
       </div>
+      <dialog id="my_modal" className="modal modal-bottom sm:modal-middle" onCancel={e => e.preventDefault()}>
+        <div className='modal-box'>
+          <BookGenerator chapters={chapters} topic={topic} sectionSelections={sectionSelectionState} />
+        </div>
+      </dialog>
     </section>
   )
 }
 
-// function chapterSelectionReducer(draft: boolean[], action: { type: string; index: number; }) {
+// function submitSelectionReducer(_: boolean, action: { type: string }) {
 //   switch (action.type) {
-//     case 'toggle chapter selection': {
-//       draft[action.index] = !draft[action.index];
-//       return draft;
+//     case 'set true': {
+//       return true;
 //     }
 //     default: {
 //       throw new Error(`Unhandled action type: ${action.type}`);

@@ -80,13 +80,13 @@ function Landing() {
   }
 
   const handleContentSelection = () => {
-    navigate('/book', { state: { tableOfContents: chapters.current } });
+    navigate('/book', { state: { tableOfContents: chapters.current, topic: topic } });
   }
 
   return (
     <section className="py-[--section-padding] h-full" data-theme="autumn">
-      <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5 text-xl md:text-2xl lg:text-3xl xl:text-4xl">
-        <h1 className="text-center">BookGen&#128214;</h1>
+      <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5">
+        <h1 className="text-center text-5xl lg:text-6xl xl:text-7xl">BookGen&#128214;</h1>
         <div className="divider my-1"></div>
 
         {/* there probably needs to be handler function here for the form submission */}
@@ -106,8 +106,8 @@ function Landing() {
         {/* <h1>{topic}</h1> */}
       </div>
       <dialog id="my_modal" className="modal modal-bottom sm:modal-middle" onCancel={e => e.preventDefault()}>
-      <div className="modal-box">
-        {generateFull ? <BookGenerator chapters={chapters.current} topic={topic}/> : 
+        <div className="modal-box">
+          {generateFull ? <BookGenerator chapters={chapters.current} topic={topic}/> : 
           <>
             <h3 className="font-bold text-lg">How much of your book do you want to generate?</h3>
             <p className="py-4">*Note: Generating a full book can take long depending on the number of sections in your book.</p>

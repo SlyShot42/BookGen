@@ -90,7 +90,7 @@ function BookGenerator({chapters, topic, sectionSelections = null}: {chapters: C
           value={currentProgress}
           max={maxProgress}
         />
-        
+        <p>{currentProgress}/{maxProgress}</p>
     </>
   )
 }
