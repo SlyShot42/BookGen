@@ -1,18 +1,22 @@
-import React from "react";
-
 function Content() {
   return (
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content">
-        <section className="h-full" data-theme="autumn">
+        {/* <section className="h-full" data-theme="autumn">
           <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5">
             <h1 className="text-center text-5xl lg:text-6xl xl:text-7xl">
               Reading + Problems
             </h1>
             <div className="divider my-1"></div>
           </div>
-        </section>
+        </section> */}
+        <label
+          htmlFor="my-drawer-2"
+          className="btn btn-primary drawer-button lg:hidden"
+        >
+          Open drawer
+        </label>
       </div>
       <div className="drawer-side">
         <label
