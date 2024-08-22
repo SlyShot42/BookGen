@@ -2,7 +2,7 @@
 import './App.css'
 import { Route, Routes } from 'react-router-dom'
 import Landing from './pages/landing/Landing'
-import Book from './pages/book/Book'
+import BookContentSelector from './pages/Content Selection/ContentSelection'
 
 function App() {
   
@@ -10,7 +10,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/book" element={<Book />} />
+      <Route path="/book" element={<BookContentSelector />} />
     </Routes>
     
   )

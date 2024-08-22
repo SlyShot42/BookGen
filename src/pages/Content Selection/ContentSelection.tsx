@@ -11,7 +11,7 @@ type ChapterDetailsType = z.infer<typeof ChapterDetails>;
 type SectionDetailsType = z.infer<typeof SectionDetails>;
 
 
-function Book() {
+function BookContentSelector() {
   const location = useLocation();
   const chapters = location.state.tableOfContents;
   const topic = location.state.topic;
@@ -135,4 +135,4 @@ function sectionSelectionReducer(draft: boolean[][], action: { type: string; ind
   }
 }
 
-export default Book
+export default BookContentSelector
