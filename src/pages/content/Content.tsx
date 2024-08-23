@@ -48,7 +48,7 @@ function Content() {
             <div className="divider my-1"></div>
 
             <div className="overflow-y-auto">
-              <article className="prose w-full max-w-3xl mx-auto">
+              <article className="prose w-full max-w-3xl mx-auto selection:bg-amber-200">
                 <Markdown
                   remarkPlugins={[remarkMath]}
                   rehypePlugins={[rehypeKatex]}
