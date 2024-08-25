@@ -39,17 +39,24 @@ function BookGenerator({
         )
     : totalSections;
 
-  const [currentProgress, dispatchProgress] = useImmerReducer(
-    progressReducer,
-    0
-  );
+  // const [progress, dispatchProgress] = useImmerReducer(
+  //   progressReducer,
+  //   0
+  // );
 
+  const progress = useRef(0);
   const sectionContent = useRef(
     chapters!.map((chapter: ChapterDetailsType) =>
       Array(chapter.sections.length).fill("")
     )
   );
-  const currentIndex = useRef([0, 0]);
+  // const currentIndex = useRef([0, 0]);
+  const [currentIndex, dispatchCurrentIndex] = useImmerReducer(
+    currentIndexReducer,
+    [0, 0]
+  );
+  // let sectionIndex = currentIndex.current[1];
+  // let chapterIndex = currentIndex.current[0];
 
   useEffect(() => {
     const generateContent = async (title: string) => {
@@ -75,55 +82,68 @@ function BookGenerator({
           ],
           temperature: 0.4,
         });
-        console.log(completion.choices[0].message.content);
+        // console.log(completion.choices[0].message.content);
         content = completion.choices[0].message.content;
       } catch (error) {
         console.error("Error fetching completion", error);
       } finally {
-        dispatchProgress({ type: "increment" });
+        progress.current += 1;
+        const [chapterIndex, sectionIndex] = currentIndex;
+        if (sectionIndex < chapters![chapterIndex].sections.length - 1) {
+          dispatchCurrentIndex({ type: "increment section" });
+        } else if (chapterIndex < chapters!.length) {
+          dispatchCurrentIndex({ type: "increment chapter" });
+        }
+        // console.log(currentIndex);
       }
       return content;
     };
 
-    if (currentProgress < maxProgress) {
+    if (progress.current < maxProgress) {
+      const [chapterIndex, sectionIndex] = currentIndex;
       if (sectionSelections) {
-        const [chapterIndex, sectionIndex] = currentIndex.current;
+        console.log(chapterIndex, sectionIndex);
+        console.log(sectionSelections[chapterIndex][sectionIndex]);
         if (sectionSelections[chapterIndex][sectionIndex]) {
           sectionContent.current[chapterIndex][sectionIndex] = generateContent(
             chapters![chapterIndex].sections[sectionIndex].title
           );
         }
-
-        if (sectionIndex < sectionSelections[chapterIndex].length - 1) {
-          currentIndex.current = [chapterIndex, sectionIndex + 1];
-        } else if (chapterIndex < sectionSelections.length - 1) {
-          currentIndex.current = [chapterIndex + 1, 0];
-        }
       } else {
-        const [chapterIndex, sectionIndex] = currentIndex.current;
+        console.log(chapterIndex, sectionIndex);
+        console.log(
+          chapters![chapterIndex].sections.length - 1,
+          chapters!.length
+        );
         sectionContent.current[chapterIndex][sectionIndex] = generateContent(
           chapters![chapterIndex].sections[sectionIndex].title
         );
-
-        if (sectionIndex < chapters![chapterIndex].sections.length - 1) {
-          currentIndex.current = [chapterIndex, sectionIndex + 1];
-        } else if (chapterIndex < chapters!.length - 1) {
-          currentIndex.current = [chapterIndex + 1, 0];
-        }
       }
-    } else {
-      navigate("/content", {
-        state: { chapters, sectionContent: sectionContent.current },
-      });
+
+      if (sectionContent.current[chapterIndex][sectionIndex] === "") {
+        if (sectionIndex < chapters![chapterIndex].sections.length) {
+          dispatchCurrentIndex({ type: "increment section" });
+        } else if (chapterIndex < chapters!.length) {
+          dispatchCurrentIndex({ type: "increment chapter" });
+        }
+        // console.log(currentIndex);
+      }
     }
+
+    // else {
+    //   navigate("/content", {
+    //     state: { chapters, sectionContent: sectionContent.current },
+    //   });
+    // }
+    console.log("end of useEffect");
   }, [
     chapters,
-    currentProgress,
-    dispatchProgress,
+    currentIndex,
+    dispatchCurrentIndex,
     maxProgress,
-    sectionSelections,
     topic,
     navigate,
+    sectionSelections,
   ]);
 
   return (
@@ -131,22 +151,36 @@ function BookGenerator({
       <h1>Generating Book</h1>
       <progress
         className="progress progress-primary w-full"
-        value={currentProgress}
+        value={progress.current}
         max={maxProgress}
       />
       <p>
-        {currentProgress}/{maxProgress}
+        {progress.current}/{maxProgress}
       </p>
     </>
   );
 }
 
-const progressReducer = (draft: number, action: { type: string }) => {
+// const progressReducer = (draft: number, action: { type: string }) => {
+//   switch (action.type) {
+//     case "increment":
+//       return draft + 1;
+//     default:
+//       return;
+//   }
+// };
+
+const currentIndexReducer = (draft: number[], action: { type: string }) => {
   switch (action.type) {
-    case "increment":
-      return draft + 1;
+    case "increment section":
+      draft[1] += 1;
+      return draft;
+    case "increment chapter":
+      draft[0] += 1;
+      draft[1] = 0;
+      return draft;
     default:
-      return;
+      return draft;
   }
 };
 
