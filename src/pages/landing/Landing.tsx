@@ -115,6 +115,18 @@ function Landing() {
     });
   };
 
+  const generateIndices = (chapters: ChapterDetailsType[]) => {
+    const selectedIndices: [number, number][] = [];
+
+    chapters.forEach((chapter, i) => {
+      chapter.sections.forEach((_, j) => {
+        selectedIndices.push([i, j]);
+      });
+    });
+
+    return selectedIndices;
+  };
+
   return (
     <section className="py-[--section-padding] h-full" data-theme="autumn">
       <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5">
@@ -162,9 +174,7 @@ function Landing() {
             <BookGenerator
               chapters={chapters.current!}
               topic={topic}
-              sectionSelections={chapters.current!.flatMap((chapter, i) =>
-                chapter.sections.map((_, j) => [i, j])
-              )}
+              sectionSelections={generateIndices(chapters.current!)}
             />
           ) : (
             <>

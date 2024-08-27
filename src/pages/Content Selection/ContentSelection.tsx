@@ -4,7 +4,7 @@ import { z } from "zod";
 import { SectionDetails, ChapterDetails } from "../landing/Landing";
 import { useImmerReducer } from "use-immer";
 import { useRef } from "react";
-import BookGenerator from "../../components/BookGenerator";
+import BookGenerator from "../../components/BookGenerator(v2)";
 
 type ChapterDetailsType = z.infer<typeof ChapterDetails>;
 type SectionDetailsType = z.infer<typeof SectionDetails>;
@@ -65,6 +65,20 @@ function BookContentSelector() {
       indices: [index],
     });
   };
+
+  function getSelectedIndices(selectionState: boolean[][]): [number, number][] {
+    const selectedIndices: [number, number][] = [];
+
+    selectionState.forEach((chapter, chapterIndex) => {
+      chapter.forEach((isSelected, sectionIndex) => {
+        if (isSelected) {
+          selectedIndices.push([chapterIndex, sectionIndex]);
+        }
+      });
+    });
+    console.log(selectedIndices);
+    return selectedIndices;
+  }
 
   return (
     <section className="h-full" data-theme="autumn">
@@ -156,7 +170,7 @@ function BookContentSelector() {
             <BookGenerator
               chapters={chapters}
               topic={topic}
-              sectionSelections={sectionSelectionState}
+              sectionSelections={getSelectedIndices(sectionSelectionState)}
             />
           )}
         </div>
