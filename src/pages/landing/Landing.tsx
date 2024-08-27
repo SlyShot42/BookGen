@@ -9,7 +9,7 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { useNavigate } from "react-router-dom";
-import BookGenerator from "../../components/BookGenerator";
+import BookGenerator from "../../components/BookGenerator(v2)";
 // import dotenv from 'dotenv';
 // dotenv.config();
 // console.log(process.env);
@@ -159,7 +159,13 @@ function Landing() {
       >
         <div className="modal-box">
           {generateFull ? (
-            <BookGenerator chapters={chapters.current} topic={topic} />
+            <BookGenerator
+              chapters={chapters.current!}
+              topic={topic}
+              sectionSelections={chapters.current!.flatMap((chapter, i) =>
+                chapter.sections.map((_, j) => [i, j])
+              )}
+            />
           ) : (
             <>
               <h3 className="font-bold text-lg">
