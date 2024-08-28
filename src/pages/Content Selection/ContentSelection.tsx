@@ -1,13 +1,20 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { z } from "zod";
-import { SectionDetails, ChapterDetails } from "../landing/Landing";
+// import { z } from "zod";
+import {
+  ContentifiedChapterDetailsType,
+  ContentifiedSectionDetailsType,
+} from "../landing/Landing";
 import { useImmerReducer } from "use-immer";
 import { useRef } from "react";
 import BookGenerator from "../../components/BookGenerator(v2)";
 
-type ChapterDetailsType = z.infer<typeof ChapterDetails>;
-type SectionDetailsType = z.infer<typeof SectionDetails>;
+// type ContentifiedChapterDetailsType = z.infer<
+//   typeof ContentifiedChapterDetails
+// >;
+// type ContentifiedSectionDetailsType = z.infer<
+//   typeof ContentifiedSectionDetails
+// >;
 
 function BookContentSelector() {
   const location = useLocation();
@@ -18,7 +25,7 @@ function BookContentSelector() {
   const [sectionSelectionState, dispatchSectionSelectionState] =
     useImmerReducer(
       sectionSelectionReducer,
-      chapters.map((chapter: ChapterDetailsType) =>
+      chapters.map((chapter: ContentifiedChapterDetailsType) =>
         Array(chapter.sections.length).fill(false)
       )
     );
@@ -95,7 +102,7 @@ function BookContentSelector() {
           <div className="overflow-y-auto">
             <article className="prose w-full max-w-3xl mx-auto pr-3.5 text-xs md:text-base lg:text-3xl">
               <ol>
-                {chapters.map((chapter: ChapterDetailsType) => (
+                {chapters.map((chapter: ContentifiedChapterDetailsType) => (
                   <li key={chapter.number}>
                     <div className="group">
                       <label className="label cursor-pointer">
@@ -121,30 +128,32 @@ function BookContentSelector() {
                       ></div>
                     </div>
                     <ol className="my-1 list-[upper-roman]">
-                      {chapter.sections.map((section: SectionDetailsType) => (
-                        <li key={section.number}>
-                          <label className="label cursor-pointer">
-                            <span className="label-text text-wrap">
-                              {section.title}
-                            </span>
-                            <input
-                              type="checkbox"
-                              className="checkbox checkbox-sm checkbox-primary"
-                              checked={
-                                sectionSelectionState[chapter.number - 1][
-                                  section.number - 1
-                                ]
-                              }
-                              onChange={() =>
-                                handleSectionClick([
-                                  chapter.number - 1,
-                                  section.number - 1,
-                                ])
-                              }
-                            />
-                          </label>
-                        </li>
-                      ))}
+                      {chapter.sections.map(
+                        (section: ContentifiedSectionDetailsType) => (
+                          <li key={section.number}>
+                            <label className="label cursor-pointer">
+                              <span className="label-text text-wrap">
+                                {section.title}
+                              </span>
+                              <input
+                                type="checkbox"
+                                className="checkbox checkbox-sm checkbox-primary"
+                                checked={
+                                  sectionSelectionState[chapter.number - 1][
+                                    section.number - 1
+                                  ]
+                                }
+                                onChange={() =>
+                                  handleSectionClick([
+                                    chapter.number - 1,
+                                    section.number - 1,
+                                  ])
+                                }
+                              />
+                            </label>
+                          </li>
+                        )
+                      )}
                     </ol>
                   </li>
                 ))}

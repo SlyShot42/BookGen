@@ -3,13 +3,14 @@ import React from "react";
 // import {useState} from 'react';
 // import { useEffect } from "react";
 // import { ChangeEvent } from "react";
-import { useRef } from "react";
+// import { useRef } from "react";
 import { useImmerReducer } from "use-immer";
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { useNavigate } from "react-router-dom";
 import BookGenerator from "../../components/BookGenerator(v2)";
+import { useQuery } from "@tanstack/react-query";
 // import dotenv from 'dotenv';
 // dotenv.config();
 // console.log(process.env);
@@ -26,14 +27,30 @@ const ChapterDetails = z.object({
   sections: z.array(SectionDetails),
 });
 
-type ChapterDetailsType = z.infer<typeof ChapterDetails>;
-type sectionDetailsType = z.infer<typeof SectionDetails>;
+const ContentifiedSectionDetails = SectionDetails.extend({
+  content: z.string().optional(),
+});
+
+const ContentifiedChapterDetails = ChapterDetails.extend({
+  sections: z.array(ContentifiedSectionDetails),
+});
+
+type ContentifiedSectionDetailsType = z.infer<
+  typeof ContentifiedSectionDetails
+>;
+type ContentifiedChapterDetailsType = z.infer<
+  typeof ContentifiedChapterDetails
+>;
+
+// type ChapterDetailsType = z.infer<typeof ChapterDetails>;
+// type sectionDetailsType = z.infer<typeof SectionDetails>;
 
 const TableOfContents = z.object({
   chapters: z.array(ChapterDetails),
 });
 
-export { SectionDetails, ChapterDetails };
+// export { SectionDetails, ChapterDetails };
+export type { ContentifiedSectionDetailsType, ContentifiedChapterDetailsType };
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -42,67 +59,66 @@ const openai = new OpenAI({
 
 function Landing() {
   const [topic, dispatchTopic] = useImmerReducer(topicReducer, "");
-  const [loading, dispatchLoad] = useImmerReducer(loadingReducer, false);
+  // const [loading, dispatchLoad] = useImmerReducer(loadingReducer, false);
   const [generateFull, dispatchGenerateFull] = useImmerReducer(
     generateFullReducer,
     false
   );
-  const chapters = useRef<ChapterDetailsType[] | null>(null);
+  // const chapters = useRef<ChapterDetailsType[] | null>(null);
 
   const navigate = useNavigate();
 
+  const fetchTableOfContents = async () => {
+    const completion = await openai.beta.chat.completions.parse({
+      model: "gpt-4o-2024-08-06",
+      messages: [
+        {
+          role: "system",
+          content: "You are a course textbook writing expert",
+        },
+        {
+          role: "user",
+          content: `Generate the table of contents (include chapter and sections) for a textbook on ${topic}`,
+        },
+      ],
+      response_format: zodResponseFormat(TableOfContents, "table_of_contents"),
+    });
+
+    return completion.choices[0].message.parsed?.chapters;
+  };
+  const { data, isLoading, isSuccess, refetch } = useQuery({
+    queryKey: ["generateTableOfContents"],
+    queryFn: fetchTableOfContents,
+    enabled: false,
+  });
+
+  const loading = isLoading;
+  let chapters: ContentifiedChapterDetailsType[] | null = null;
+
+  if (isSuccess) {
+    chapters = data!.map(
+      (chapter: ContentifiedChapterDetailsType, index: number) => {
+        return {
+          ...chapter,
+          number: index + 1,
+          sections: chapter.sections.map(
+            (section: ContentifiedSectionDetailsType, i: number) => {
+              return {
+                ...section,
+                number: i + 1,
+                content: "",
+              };
+            }
+          ),
+        };
+      }
+    );
+    (document.getElementById("my_modal") as HTMLDialogElement)?.showModal();
+  }
+
   const handleTopicSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatchLoad({ type: "set loading", setLoad: true });
-
-    try {
-      const completion = await openai.beta.chat.completions.parse({
-        model: "gpt-4o-2024-08-06",
-        messages: [
-          {
-            role: "system",
-            content: "You are a course textbook writing expert",
-          },
-          {
-            role: "user",
-            content: `Generate the table of contents (include chapter and sections) for a textbook on ${topic}`,
-          },
-        ],
-        response_format: zodResponseFormat(
-          TableOfContents,
-          "table_of_contents"
-        ),
-      });
-
-      // console.log(completion.choices[0].message.parsed);
-      // Perform any action with the response here
-      // navigate('/book', { state: { tableOfContents: completion.choices[0].message.parsed?.chapters } });
-      // console.log(typeof completion.choices[0].message.parsed?.chapters);
-      chapters.current = completion.choices[0].message.parsed?.chapters || null;
-
-      chapters.current = chapters.current!.map(
-        (chapter: ChapterDetailsType, index: number) => {
-          return {
-            ...chapter,
-            number: index + 1,
-            sections: chapter.sections.map(
-              (section: sectionDetailsType, i: number) => {
-                return {
-                  ...section,
-                  number: i + 1,
-                };
-              }
-            ),
-          };
-        }
-      );
-      console.log(chapters.current);
-      (document.getElementById("my_modal") as HTMLDialogElement)?.showModal();
-    } catch (error) {
-      console.error("Error fetching completion: ", error);
-    } finally {
-      dispatchLoad({ type: "set loading", setLoad: false });
-    }
+    refetch();
   };
 
   const handleFullGenerate = () => {
@@ -111,11 +127,11 @@ function Landing() {
 
   const handleContentSelection = () => {
     navigate("/book", {
-      state: { tableOfContents: chapters.current, topic: topic },
+      state: { tableOfContents: chapters, topic: topic },
     });
   };
 
-  const generateIndices = (chapters: ChapterDetailsType[]) => {
+  const generateIndices = (chapters: ContentifiedChapterDetailsType[]) => {
     const selectedIndices: [number, number][] = [];
 
     chapters.forEach((chapter, i) => {
@@ -172,9 +188,9 @@ function Landing() {
         <div className="modal-box">
           {generateFull ? (
             <BookGenerator
-              chapters={chapters.current!}
+              chapters={chapters!}
               topic={topic}
-              sectionSelections={generateIndices(chapters.current!)}
+              sectionSelections={generateIndices(chapters!)}
             />
           ) : (
             <>
@@ -217,20 +233,6 @@ function generateFullReducer(_: boolean, action: { type: string }) {
   switch (action.type) {
     case "set generate full": {
       return true;
-    }
-    default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
-    }
-  }
-}
-
-function loadingReducer(
-  _: boolean,
-  action: { type: string; setLoad: boolean }
-) {
-  switch (action.type) {
-    case "set loading": {
-      return action.setLoad;
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);

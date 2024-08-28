@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { useImmerReducer } from "use-immer";
-import { ChapterDetails } from "../pages/landing/Landing";
+import { ContentifiedChapterDetails } from "../pages/landing/Landing";
 import { useEffect } from "react";
 import { useRef } from "react";
 import { z } from "zod";
@@ -11,14 +11,17 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
-type ChapterDetailsType = z.infer<typeof ChapterDetails>;
+type ContentifiedChapterDetailsType = z.infer<
+  typeof ContentifiedChapterDetails
+>;
+// type ChapterDetailsType = z.infer<typeof ChapterDetails>;
 
 function BookGenerator({
   chapters,
   topic,
   sectionSelections = null,
 }: {
-  chapters: ChapterDetailsType[] | null;
+  chapters: ContentifiedChapterDetailsType[] | null;
   topic: string;
   sectionSelections?: boolean[][] | null;
 }) {
@@ -46,7 +49,7 @@ function BookGenerator({
 
   const progress = useRef(0);
   const sectionContent = useRef(
-    chapters!.map((chapter: ChapterDetailsType) =>
+    chapters!.map((chapter: ContentifiedChapterDetailsType) =>
       Array(chapter.sections.length).fill("")
     )
   );
