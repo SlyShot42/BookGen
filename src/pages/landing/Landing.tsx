@@ -27,6 +27,8 @@ const ChapterDetails = z.object({
   sections: z.array(SectionDetails),
 });
 
+const ChaptersArray = z.array(ChapterDetails);
+
 const ContentifiedSectionDetails = SectionDetails.extend({
   content: z.string().optional(),
 });
@@ -34,6 +36,10 @@ const ContentifiedSectionDetails = SectionDetails.extend({
 const ContentifiedChapterDetails = ChapterDetails.extend({
   sections: z.array(ContentifiedSectionDetails),
 });
+
+const ContentifiedChaptersArray = z.array(ContentifiedChapterDetails);
+
+type ContentifiedChaptersArrayType = z.infer<typeof ContentifiedChaptersArray>;
 
 type ContentifiedSectionDetailsType = z.infer<
   typeof ContentifiedSectionDetails
@@ -46,11 +52,15 @@ type ContentifiedChapterDetailsType = z.infer<
 // type sectionDetailsType = z.infer<typeof SectionDetails>;
 
 const TableOfContents = z.object({
-  chapters: z.array(ChapterDetails),
+  chapters: ChaptersArray,
 });
 
 // export { SectionDetails, ChapterDetails };
-export type { ContentifiedSectionDetailsType, ContentifiedChapterDetailsType };
+export type {
+  ContentifiedSectionDetailsType,
+  ContentifiedChapterDetailsType,
+  ContentifiedChaptersArrayType,
+};
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
