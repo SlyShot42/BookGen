@@ -10,7 +10,7 @@ type InitializeAction = {
 type AddSectionContentAction = {
   type: "add_section_content";
   sectionIndex: [number, number];
-  content: string;
+  content: string | null | undefined;
 };
 
 type Action = InitializeAction | AddSectionContentAction;
@@ -41,7 +41,7 @@ const chaptersReducer: ImmerReducer<ContentifiedChaptersArrayType, Action> = (
       return action.payload;
     case "add_section_content":
       draft[action.sectionIndex[0]].sections[action.sectionIndex[1]].content =
-        action.content;
+        action.content!;
       return draft;
     default:
       throw new Error(`Unhandled action type: ${action}`);

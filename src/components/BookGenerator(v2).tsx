@@ -1,9 +1,10 @@
 import OpenAI from "openai";
 // import { useImmerReducer } from "use-immer";
 // import { z } from "zod";
-import { ContentifiedChapterDetailsType } from "../pages/landing/Landing";
 // import { useCallback, useEffect, useRef } from "react";
 import { useQueries } from "@tanstack/react-query";
+import { useChapters, useChaptersDispatch } from "../ChaptersUtils";
+import { useTopic } from "../TopicUtils";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -11,14 +12,15 @@ const openai = new OpenAI({
 });
 
 function BookGenerator({
-  chapters,
-  topic,
   sectionSelections,
 }: {
-  chapters: ContentifiedChapterDetailsType[];
-  topic: string;
   sectionSelections: [number, number][];
 }) {
+  const chapters = useChapters();
+  const chaptersDispatch = useChaptersDispatch();
+
+  const topic = useTopic();
+
   const combinedQueries = useQueries({
     queries: sectionSelections.map((position) => {
       return {
@@ -44,14 +46,18 @@ function BookGenerator({
   const progress = combinedQueries.progress;
   const maxProgress = sectionSelections.length;
 
-  // const [progress, dispatchProgress] = useImmerReducer(progressReducer, 0);
-  // const sectionContent = useRef(
-  //   chapters!.map((chapter: ContentifiedChapterDetailsType) =>
-  //     Array(chapter.sections.length).fill("")
-  //   )
-  // );
-  // const maxProgress = sectionSelections.length;
-  // const calls = useRef(0);
+  if (progress === maxProgress) {
+    combinedQueries.contentArray.forEach((positionContent) => {
+      chaptersDispatch({
+        type: "add_section_content",
+        sectionIndex: [
+          positionContent.chapterIndex,
+          positionContent.sectionIndex,
+        ],
+        content: positionContent.content,
+      });
+    });
+  }
 
   const generateBook = async (position: number[]) => {
     const chapterIndex = position[0];
@@ -82,20 +88,6 @@ function BookGenerator({
     console.log(completion.choices[0].message.content);
     return completion.choices[0].message.content;
   };
-  // useEffect(() => {
-  //   let ignore = false;
-  //   if (progress < maxProgress) {
-  //     generateBook(sectionSelections[progress], ignore);
-  //   } else {
-  //     const fillCheck = sectionContent.current
-  //       .flat()
-  //       .every((content) => content !== "");
-  //     console.log(fillCheck);
-  //   }
-  //   return () => {
-  //     ignore = true;
-  //   };
-  // }, [generateBook, maxProgress, progress, sectionSelections]);
 
   return (
     <>
@@ -111,15 +103,5 @@ function BookGenerator({
     </>
   );
 }
-
-// const progressReducer = (draft: number, action: { type: string }) => {
-//   switch (action.type) {
-//     case "increment":
-//       draft += 1;
-//       return draft;
-//     default:
-//       return draft;
-//   }
-// };
 
 export default BookGenerator;

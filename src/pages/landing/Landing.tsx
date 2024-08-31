@@ -11,7 +11,8 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { useNavigate } from "react-router-dom";
 import BookGenerator from "../../components/BookGenerator(v2)";
 import { useQuery } from "@tanstack/react-query";
-import { useChaptersDispatch } from "../../ChaptersUtils";
+import { useChapters, useChaptersDispatch } from "../../ChaptersUtils";
+import { useTopic, useTopicDispatch } from "../../TopicUtils";
 // import dotenv from 'dotenv';
 // dotenv.config();
 // console.log(process.env);
@@ -72,7 +73,9 @@ const openai = new OpenAI({
 });
 
 function Landing() {
-  const [topic, dispatchTopic] = useImmerReducer(topicReducer, "");
+  // const [topic, dispatchTopic] = useImmerReducer(topicReducer, "");
+  const topic = useTopic();
+  const dispatchTopic = useTopicDispatch();
   // const [loading, dispatchLoad] = useImmerReducer(loadingReducer, false);
   const [generateFull, dispatchGenerateFull] = useImmerReducer(
     generateFullReducer,
@@ -107,7 +110,7 @@ function Landing() {
   });
 
   const loading = isLoading;
-  let chapters: ContentifiedChapterDetailsType[] | null = null;
+  let chapters: ContentifiedChapterDetailsType[] | null = useChapters();
 
   const dispatchChapters = useChaptersDispatch();
 
@@ -141,12 +144,10 @@ function Landing() {
   };
 
   const handleContentSelection = () => {
-    navigate("/book", {
-      state: { tableOfContents: chapters, topic: topic },
-    });
+    navigate("/book");
   };
 
-  const generateIndices = (chapters: ContentifiedChapterDetailsType[]) => {
+  const generateIndices = () => {
     const selectedIndices: [number, number][] = [];
 
     chapters.forEach((chapter, i) => {
@@ -176,7 +177,7 @@ function Landing() {
             className="textarea textarea-primary textarea-md font-mono text-neutral font-bold h-full md:max-h-80 lg:max-h-52"
             placeholder="Enter the topic you want to study..."
             onChange={(e) =>
-              dispatchTopic({ type: "set topic", newTopic: e.target.value })
+              dispatchTopic({ type: "set topic", payload: e.target.value })
             }
             value={topic}
           />
@@ -202,11 +203,7 @@ function Landing() {
       >
         <div className="modal-box">
           {generateFull ? (
-            <BookGenerator
-              chapters={chapters!}
-              topic={topic}
-              sectionSelections={generateIndices(chapters!)}
-            />
+            <BookGenerator sectionSelections={generateIndices()} />
           ) : (
             <>
               <h3 className="font-bold text-lg">
@@ -255,15 +252,15 @@ function generateFullReducer(_: boolean, action: { type: string }) {
   }
 }
 
-function topicReducer(_: string, action: { type: string; newTopic: string }) {
-  switch (action.type) {
-    case "set topic": {
-      return action.newTopic;
-    }
-    default: {
-      throw new Error(`Unhandled action type: ${action.type}`);
-    }
-  }
-}
+// function topicReducer(_: string, action: { type: string; newTopic: string }) {
+//   switch (action.type) {
+//     case "set topic": {
+//       return action.newTopic;
+//     }
+//     default: {
+//       throw new Error(`Unhandled action type: ${action.type}`);
+//     }
+//   }
+// }
 
 export default Landing;

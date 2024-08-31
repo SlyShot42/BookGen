@@ -8,6 +8,8 @@ import {
 import { useImmerReducer } from "use-immer";
 import { useRef } from "react";
 import BookGenerator from "../../components/BookGenerator(v2)";
+import { useChapters } from "../../ChaptersUtils";
+import { useTopic } from "../../TopicUtils";
 
 // type ContentifiedChapterDetailsType = z.infer<
 //   typeof ContentifiedChapterDetails
@@ -18,8 +20,10 @@ import BookGenerator from "../../components/BookGenerator(v2)";
 
 function BookContentSelector() {
   const location = useLocation();
-  const chapters = location.state.tableOfContents;
-  const topic = location.state.topic;
+  // const chapters = location.state.tableOfContents;
+  // const topic = location.state.topic;
+  const chapters = useChapters();
+  const topic = useTopic();
   // const [chapterSelectionState, dispatchSelectionState] = useImmerReducer(chapterSelectionReducer, Array(chapters.length).fill(false));
   const chapterSelectionState = useRef(Array(chapters.length).fill(false));
   const [sectionSelectionState, dispatchSectionSelectionState] =
