@@ -11,6 +11,7 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { useNavigate } from "react-router-dom";
 import BookGenerator from "../../components/BookGenerator(v2)";
 import { useQuery } from "@tanstack/react-query";
+import { useChaptersDispatch } from "../../ChaptersUtils";
 // import dotenv from 'dotenv';
 // dotenv.config();
 // console.log(process.env);
@@ -28,6 +29,9 @@ const ChapterDetails = z.object({
 });
 
 const ChaptersArray = z.array(ChapterDetails);
+
+type ChapterDetailsType = z.infer<typeof ChapterDetails>;
+type SectionDetailsType = z.infer<typeof SectionDetails>;
 
 const ContentifiedSectionDetails = SectionDetails.extend({
   content: z.string().optional(),
@@ -105,24 +109,25 @@ function Landing() {
   const loading = isLoading;
   let chapters: ContentifiedChapterDetailsType[] | null = null;
 
+  const dispatchChapters = useChaptersDispatch();
+
   if (isSuccess) {
-    chapters = data!.map(
-      (chapter: ContentifiedChapterDetailsType, index: number) => {
-        return {
-          ...chapter,
-          number: index + 1,
-          sections: chapter.sections.map(
-            (section: ContentifiedSectionDetailsType, i: number) => {
-              return {
-                ...section,
-                number: i + 1,
-                content: "",
-              };
-            }
-          ),
-        };
-      }
-    );
+    chapters = data!.map((chapter: ChapterDetailsType, index: number) => {
+      return {
+        ...chapter,
+        number: index + 1,
+        sections: chapter.sections.map(
+          (section: SectionDetailsType, i: number) => {
+            return {
+              ...section,
+              number: i + 1,
+              content: "",
+            };
+          }
+        ),
+      };
+    });
+    dispatchChapters({ type: "initialize", payload: chapters });
     (document.getElementById("my_modal") as HTMLDialogElement)?.showModal();
   }
 
