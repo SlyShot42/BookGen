@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 // import { z } from "zod";
 import {
   ContentifiedChapterDetailsType,
@@ -9,7 +9,6 @@ import { useImmerReducer } from "use-immer";
 import { useRef } from "react";
 import BookGenerator from "../../components/BookGenerator(v2)";
 import { useChapters } from "../../ChaptersUtils";
-import { useTopic } from "../../TopicUtils";
 
 // type ContentifiedChapterDetailsType = z.infer<
 //   typeof ContentifiedChapterDetails
@@ -19,20 +18,21 @@ import { useTopic } from "../../TopicUtils";
 // >;
 
 function BookContentSelector() {
-  const location = useLocation();
+  // const location = useLocation();
   // const chapters = location.state.tableOfContents;
   // const topic = location.state.topic;
   const chapters = useChapters();
-  const topic = useTopic();
   // const [chapterSelectionState, dispatchSelectionState] = useImmerReducer(chapterSelectionReducer, Array(chapters.length).fill(false));
-  const chapterSelectionState = useRef(Array(chapters.length).fill(false));
+  const initialSectionSelectionState = chapters.map((chapter) => {
+    return chapter.sections.map((section) => section.content !== "");
+  });
+  const initialChapterSelectionState = chapters.map((chapter) =>
+    chapter.sections.every((section) => section.content !== "")
+  );
+
+  const chapterSelectionState = useRef(initialChapterSelectionState);
   const [sectionSelectionState, dispatchSectionSelectionState] =
-    useImmerReducer(
-      sectionSelectionReducer,
-      chapters.map((chapter: ContentifiedChapterDetailsType) =>
-        Array(chapter.sections.length).fill(false)
-      )
-    );
+    useImmerReducer(sectionSelectionReducer, initialSectionSelectionState);
   const [submitSelection, dispatchSubmitSelection] = useImmerReducer(
     submitSelectionReducer,
     false
@@ -53,18 +53,12 @@ function BookContentSelector() {
     if (chapterSelectionState.current[index]) {
       dispatchSectionSelectionState({
         type: "set true",
-        indices: chapters[index].sections.map((_: void, i: number) => [
-          index,
-          i,
-        ]),
+        indices: chapters[index].sections.map((_, i) => [index, i]),
       });
     } else {
       dispatchSectionSelectionState({
         type: "set false",
-        indices: chapters[index].sections.map((_: void, i: number) => [
-          index,
-          i,
-        ]),
+        indices: chapters[index].sections.map((_, i) => [index, i]),
       });
     }
     // dispatchSectionSelectionState({ type: 'set true',  indices: chapters[index].sections.map((_: void, i: number) => [index, i]) });
@@ -114,6 +108,9 @@ function BookContentSelector() {
                           <strong>{chapter.title}</strong>
                         </span>
                         <input
+                          disabled={
+                            initialChapterSelectionState[chapter.number - 1]
+                          }
                           type="checkbox"
                           className="checkbox checkbox-primary"
                           checked={sectionSelectionState[
@@ -140,6 +137,11 @@ function BookContentSelector() {
                                 {section.title}
                               </span>
                               <input
+                                disabled={
+                                  initialSectionSelectionState[
+                                    chapter.number - 1
+                                  ][section.number - 1]
+                                }
                                 type="checkbox"
                                 className="checkbox checkbox-sm checkbox-primary"
                                 checked={
@@ -181,8 +183,6 @@ function BookContentSelector() {
         <div className="modal-box">
           {submitSelection && (
             <BookGenerator
-              chapters={chapters}
-              topic={topic}
               sectionSelections={getSelectedIndices(sectionSelectionState)}
             />
           )}
