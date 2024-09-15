@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 // import SelectionCards from "./SelectionCards";
 // import {useState} from 'react';
 // import { useEffect } from "react";
@@ -110,29 +110,33 @@ function Landing() {
   });
 
   const loading = isLoading;
-  let chapters: ContentifiedChapterDetailsType[] | null = useChapters();
+  const chapters: ContentifiedChapterDetailsType[] | null = useChapters();
 
   const dispatchChapters = useChaptersDispatch();
+  // const lock = useRef(true);
 
-  if (isSuccess) {
-    chapters = data!.map((chapter: ChapterDetailsType, index: number) => {
-      return {
-        ...chapter,
-        number: index + 1,
-        sections: chapter.sections.map(
-          (section: SectionDetailsType, i: number) => {
-            return {
-              ...section,
-              number: i + 1,
-              content: "",
-            };
-          }
-        ),
-      };
-    });
-    dispatchChapters({ type: "initialize", payload: chapters });
-    (document.getElementById("my_modal") as HTMLDialogElement)?.showModal();
-  }
+  useEffect(() => {
+    let temp = null;
+    if (isSuccess) {
+      temp = data!.map((chapter: ChapterDetailsType, index: number) => {
+        return {
+          ...chapter,
+          number: index + 1,
+          sections: chapter.sections.map(
+            (section: SectionDetailsType, i: number) => {
+              return {
+                ...section,
+                number: i + 1,
+                content: "",
+              };
+            }
+          ),
+        };
+      });
+      dispatchChapters({ type: "initialize", payload: temp });
+      (document.getElementById("my_modal") as HTMLDialogElement)?.showModal();
+    }
+  }, [isSuccess, data, dispatchChapters]);
 
   const handleTopicSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -177,7 +181,7 @@ function Landing() {
             className="textarea textarea-primary textarea-md font-mono text-neutral font-bold h-full md:max-h-80 lg:max-h-52"
             placeholder="Enter the topic you want to study..."
             onChange={(e) =>
-              dispatchTopic({ type: "set topic", payload: e.target.value })
+              dispatchTopic({ type: "set", payload: e.target.value })
             }
             value={topic}
           />

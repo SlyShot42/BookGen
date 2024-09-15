@@ -5,6 +5,9 @@ import OpenAI from "openai";
 import { useQueries } from "@tanstack/react-query";
 import { useChapters, useChaptersDispatch } from "../ChaptersUtils";
 import { useTopic } from "../TopicUtils";
+import { useEffect } from "react";
+import { unstable_batchedUpdates } from "react-dom";
+import { useNavigate } from "react-router-dom";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -45,19 +48,31 @@ function BookGenerator({
 
   const progress = combinedQueries.progress;
   const maxProgress = sectionSelections.length;
+  const navigate = useNavigate();
 
-  if (progress === maxProgress) {
-    combinedQueries.contentArray.forEach((positionContent) => {
-      chaptersDispatch({
-        type: "add_section_content",
-        sectionIndex: [
-          positionContent.chapterIndex,
-          positionContent.sectionIndex,
-        ],
-        content: positionContent.content,
+  useEffect(() => {
+    if (progress === maxProgress) {
+      unstable_batchedUpdates(() => {
+        combinedQueries.contentArray.forEach((positionContent) => {
+          chaptersDispatch({
+            type: "add_section_content",
+            sectionIndex: [
+              positionContent.chapterIndex,
+              positionContent.sectionIndex,
+            ],
+            content: positionContent.content,
+          });
+        });
       });
-    });
-  }
+      navigate("/content");
+    }
+  }, [
+    progress,
+    maxProgress,
+    combinedQueries.contentArray,
+    chaptersDispatch,
+    navigate,
+  ]);
 
   const generateBook = async (position: number[]) => {
     const chapterIndex = position[0];

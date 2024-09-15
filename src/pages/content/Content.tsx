@@ -4,6 +4,8 @@ import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useChapters } from "../../ChaptersUtils";
+import { useTopic } from "../../TopicUtils";
 
 const markdown = `Here is some ruby code:
 
@@ -22,6 +24,10 @@ function Content() {
   // console.log('Hello, world!');
   // \`\`\`
   // `;
+  const chapters = useChapters();
+  console.log(chapters);
+  const topic = useTopic();
+  console.log(topic);
   return (
     <div className="drawer h-full lg:drawer-open">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
