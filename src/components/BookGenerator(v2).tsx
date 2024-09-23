@@ -85,7 +85,7 @@ function BookGenerator({
         {
           role: "system",
           content:
-            "You are a course textbook content generation machine designed to output in markdown(surround inline latex with $..$ and display latex with $$..$$). Do not acknowledge or greet. Output the content only. Expand on information where appropriate.",
+            "You are a course textbook content generation machine designed to output in markdown latex(YOU MUST surround inline latex with $..$ and display latex with $$..$$). Do not acknowledge or greet. Output the content only. Expand on information where appropriate.",
         },
         {
           role: "user",
@@ -100,8 +100,13 @@ function BookGenerator({
       temperature: 0.4,
     });
     console.log(`${chapterIndex + 1}.${sectionIndex + 1}`);
-    console.log(completion.choices[0].message.content);
-    return completion.choices[0].message.content;
+    const content = completion.choices[0].message.content
+      ?.replace(/\\\[(.*?)\\\]/gs, "$$$$" + "$1" + "$$$$")
+      .replace(/\\\((.*?)\\\)/gs, function (_, p1) {
+        return "$" + p1 + "$";
+      });
+    console.log(content);
+    return content;
   };
 
   return (

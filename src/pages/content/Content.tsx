@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Markdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
@@ -6,16 +7,17 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useChapters } from "../../ChaptersUtils";
 import { useTopic } from "../../TopicUtils";
+import "./mathoverflow.css";
 
-const markdown = `Here is some ruby code:
+// const markdown = `Here is some ruby code:
 
-~~~python
-def greet(name):
-    print(f"Hello, {name}!")
+// ~~~python
+// def greet(name):
+//     print(f"Hello, {name}!")
 
-greet("World")
-~~~
-`;
+// greet("World")
+// ~~~
+// `;
 
 function Content() {
   // const markdown = `
@@ -28,12 +30,16 @@ function Content() {
   console.log(chapters);
   const topic = useTopic();
   console.log(topic);
+  const renderChapter = chapters.map((chapter) =>
+    chapter.sections.some((section) => section.content!.trim() !== "")
+  );
+
   return (
-    <div className="drawer h-full lg:drawer-open">
+    <div className="drawer max-h-screen lg:drawer-open">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content h-full">
-        <section className="h-full" data-theme="autumn">
-          <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5">
+      <div className="drawer-content flex flex-col">
+        <section className="max-h-screen overflow-clip" data-theme="autumn">
+          <div className="max-h-screen flex flex-col w-full max-w-7xl m-auto px-2.5">
             <label
               htmlFor="my-drawer-2"
               className="btn btn-circle btn-ghost drawer-button lg:hidden mt-2"
@@ -53,52 +59,91 @@ function Content() {
             </h1>
             <div className="divider my-1"></div>
 
-            <div className="overflow-y-auto">
-              <article className="prose w-full max-w-3xl mx-auto selection:bg-amber-200">
-                <Markdown
-                  remarkPlugins={[remarkMath]}
-                  rehypePlugins={[rehypeKatex]}
-                  children={markdown}
-                  components={{
-                    code(props) {
-                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                      const { children, className, node, ref, ...rest } = props;
-                      const match = /language-(\w+)/.exec(className || "");
-                      return match ? (
-                        <SyntaxHighlighter
-                          {...rest}
-                          PreTag="div"
-                          children={String(children).replace(/\n$/, "")}
-                          language={match[1]}
-                          style={oneDark}
-                        />
-                      ) : (
-                        <code {...rest} className={className}>
-                          {children}
-                        </code>
-                      );
-                    },
-                  }}
-                />
+            <div className="overflow-y-auto overscroll-none">
+              <article className="prose lg:prose-lg xl:prose-xl w-full max-w-3xl mx-auto selection:bg-amber-200 text-pretty">
+                {chapters.map(
+                  (chapter, index) =>
+                    renderChapter[index] && (
+                      <div key={index}>
+                        <h2>{`Ch. ${chapter.number} ${chapter.title}`}</h2>
+                        <div className="divider my-1"></div>
+                        {chapter.sections.map(
+                          (section, index) =>
+                            section.content !== "" && (
+                              <div key={index}>
+                                <h3>{`${chapter.number}.${section.number} ${section.title}`}</h3>
+                                <div className="divider my-1"></div>
+                                <Markdown
+                                  remarkPlugins={[remarkMath]}
+                                  rehypePlugins={[rehypeKatex]}
+                                  children={section.content}
+                                  components={{
+                                    code(props) {
+                                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                                      const {
+                                        children,
+                                        className,
+                                        node,
+                                        ref,
+                                        ...rest
+                                      } = props;
+                                      const match = /language-(\w+)/.exec(
+                                        className || ""
+                                      );
+                                      return match ? (
+                                        <SyntaxHighlighter
+                                          {...rest}
+                                          PreTag="div"
+                                          children={String(children).replace(
+                                            /\n$/,
+                                            ""
+                                          )}
+                                          language={match[1]}
+                                          style={oneDark}
+                                        />
+                                      ) : (
+                                        <code {...rest} className={className}>
+                                          {children}
+                                        </code>
+                                      );
+                                    },
+                                  }}
+                                />
+                              </div>
+                            )
+                        )}
+                      </div>
+                    )
+                )}
               </article>
             </div>
           </div>
         </section>
       </div>
-      <div className="drawer-side">
+      <div className="drawer-side ">
         <label
           htmlFor="my-drawer-2"
           aria-label="close sidebar"
           className="drawer-overlay"
-        ></label>
+        />
         <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-          {/* Sidebar content here */}
-          <li>
-            <a>Sidebar Item 1</a>
-          </li>
-          <li>
-            <a>Sidebar Item 2</a>
-          </li>
+          {chapters.map(
+            (chapter, i) =>
+              renderChapter[i] && (
+                <li key={i}>
+                  <details>
+                    <summary>{`Ch. ${chapter.number} ${chapter.title}`}</summary>
+                    <ul>
+                      {chapter.sections.map((section, j) => (
+                        <li key={j}>
+                          <a>{`${chapter.number}.${section.number} ${section.title}`}</a>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </li>
+              )
+          )}
         </ul>
       </div>
     </div>
