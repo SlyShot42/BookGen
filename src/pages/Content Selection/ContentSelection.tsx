@@ -75,11 +75,12 @@ function BookContentSelector() {
     const selectedIndices: [number, number][] = [];
 
     selectionState.forEach((chapter, chapterIndex) => {
-      chapter.forEach((isSelected, sectionIndex) => {
-        if (isSelected) {
-          selectedIndices.push([chapterIndex, sectionIndex]);
-        }
-      });
+      !initialChapterSelectionState[chapterIndex] &&
+        chapter.forEach((isSelected, sectionIndex) => {
+          !initialSectionSelectionState[chapterIndex][sectionIndex] &&
+            isSelected &&
+            selectedIndices.push([chapterIndex, sectionIndex]);
+        });
     });
     console.log(selectedIndices);
     return selectedIndices;

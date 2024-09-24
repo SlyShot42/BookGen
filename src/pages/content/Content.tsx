@@ -134,11 +134,14 @@ function Content() {
                   <details>
                     <summary>{`Ch. ${chapter.number} ${chapter.title}`}</summary>
                     <ul>
-                      {chapter.sections.map((section, j) => (
-                        <li key={j}>
-                          <a>{`${chapter.number}.${section.number} ${section.title}`}</a>
-                        </li>
-                      ))}
+                      {chapter.sections.map(
+                        (section, j) =>
+                          section.content !== "" && (
+                            <li key={j}>
+                              <a>{`${chapter.number}.${section.number} ${section.title}`}</a>
+                            </li>
+                          )
+                      )}
                     </ul>
                   </details>
                 </li>

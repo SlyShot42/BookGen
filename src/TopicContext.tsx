@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useEffect } from "react";
 import { useImmerReducer } from "use-immer";
 
 export const TopicContext = createContext<string | null>(null);
@@ -8,7 +8,18 @@ export const TopicDispatchContext = createContext<React.Dispatch<{
 }> | null>(null);
 
 export function TopicProvider({ children }: { children: React.ReactNode }) {
-  const [topic, dispatchTopic] = useImmerReducer(topicReducer, "");
+  const [topic, dispatchTopic] = useImmerReducer(
+    topicReducer,
+    "",
+    (initial) => {
+      const sessionTopic = sessionStorage.getItem("topic");
+      return sessionTopic ? sessionTopic : initial;
+    }
+  );
+
+  useEffect(() => {
+    sessionStorage.setItem("topic", topic);
+  }, [topic]);
 
   return (
     <TopicContext.Provider value={topic}>

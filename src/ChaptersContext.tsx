@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useEffect } from "react";
 import { ContentifiedChaptersArrayType } from "./pages/landing/Landing";
 import { ImmerReducer, useImmerReducer } from "use-immer";
 
@@ -21,7 +21,18 @@ export const ChaptersDispatchContext =
   createContext<React.Dispatch<Action> | null>(null);
 
 export function ChaptersProvider({ children }: { children: React.ReactNode }) {
-  const [chapters, dispatchChapters] = useImmerReducer(chaptersReducer, []);
+  const [chapters, dispatchChapters] = useImmerReducer(
+    chaptersReducer,
+    [],
+    (initial) => {
+      const sessionChapters = sessionStorage.getItem("chapters");
+      return sessionChapters ? JSON.parse(sessionChapters) : initial;
+    }
+  );
+
+  useEffect(() => {
+    sessionStorage.setItem("chapters", JSON.stringify(chapters));
+  }, [chapters]);
 
   return (
     <ChaptersContext.Provider value={chapters}>
