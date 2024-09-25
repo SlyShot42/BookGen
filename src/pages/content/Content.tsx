@@ -8,6 +8,7 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useChapters } from "../../ChaptersUtils";
 import { useTopic } from "../../TopicUtils";
 import "./mathoverflow.css";
+import { useRef } from "react";
 
 // const markdown = `Here is some ruby code:
 
@@ -26,6 +27,11 @@ function Content() {
   // console.log('Hello, world!');
   // \`\`\`
   // `;
+  const chaptersRef = useRef<Array<HTMLHeadingElement | null>>([]);
+  const sectionsRef = useRef<Array<Array<HTMLHeadingElement | null>>>([]);
+
+  const scrollableContainerRef = useRef<HTMLDivElement | null>(null);
+
   const chapters = useChapters();
   console.log(chapters);
   const topic = useTopic();
@@ -34,12 +40,30 @@ function Content() {
     chapter.sections.some((section) => section.content!.trim() !== "")
   );
 
+  const scrollToElement = (element: HTMLElement | null) => {
+    if (element && scrollableContainerRef.current) {
+      const container = scrollableContainerRef.current;
+      const elementRect = element.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      const offset = elementRect.top - containerRect.top + container.scrollTop;
+
+      container.scrollTo({
+        top: offset,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
-    <div className="drawer max-h-screen lg:drawer-open">
+    <div
+      className="drawer max-h-screen lg:drawer-open overflow-hidden overscroll-none"
+      data-theme="autumn"
+    >
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col">
-        <section className="max-h-screen overflow-clip" data-theme="autumn">
-          <div className="max-h-screen flex flex-col w-full max-w-7xl m-auto px-2.5">
+        <section className="max-h-screen overflow-clip">
+          <div className="max-h-screen flex flex-col w-full max-w-7xl m-auto ">
             <label
               htmlFor="my-drawer-2"
               className="btn btn-circle btn-ghost drawer-button lg:hidden mt-2"
@@ -57,21 +81,33 @@ function Content() {
             <h1 className="text-center text-4xl lg:text-5xl xl:text-7xl">
               Reading + Problems
             </h1>
-            <div className="divider my-1"></div>
+            <div className="divider mt-2.5 mb-0"></div>
 
-            <div className="overflow-y-auto overscroll-none">
+            <div
+              className="overflow-y-auto overscroll-none overflow-x-hidden px-2.5"
+              ref={scrollableContainerRef}
+            >
               <article className="prose lg:prose-lg xl:prose-xl w-full max-w-3xl mx-auto selection:bg-amber-200 text-pretty">
                 {chapters.map(
-                  (chapter, index) =>
-                    renderChapter[index] && (
-                      <div key={index}>
-                        <h2>{`Ch. ${chapter.number} ${chapter.title}`}</h2>
+                  (chapter, i) =>
+                    renderChapter[i] && (
+                      <div key={i}>
+                        <h2
+                          ref={(el) => (chaptersRef.current[i] = el)}
+                        >{`Ch. ${chapter.number} ${chapter.title}`}</h2>
                         <div className="divider my-1"></div>
                         {chapter.sections.map(
-                          (section, index) =>
+                          (section, j) =>
                             section.content !== "" && (
-                              <div key={index}>
-                                <h3>{`${chapter.number}.${section.number} ${section.title}`}</h3>
+                              <div key={j}>
+                                <h3
+                                  ref={(el) => {
+                                    if (!sectionsRef.current[i]) {
+                                      sectionsRef.current[i] = [];
+                                    }
+                                    sectionsRef.current[i][j] = el;
+                                  }}
+                                >{`Sec. ${chapter.number}.${section.number} ${section.title}`}</h3>
                                 <div className="divider my-1"></div>
                                 <Markdown
                                   remarkPlugins={[remarkMath]}
@@ -120,7 +156,7 @@ function Content() {
           </div>
         </section>
       </div>
-      <div className="drawer-side ">
+      <div className="drawer-side">
         <label
           htmlFor="my-drawer-2"
           aria-label="close sidebar"
@@ -132,13 +168,25 @@ function Content() {
               renderChapter[i] && (
                 <li key={i}>
                   <details>
-                    <summary>{`Ch. ${chapter.number} ${chapter.title}`}</summary>
+                    <summary>
+                      <a
+                        onClick={() => {
+                          scrollToElement(chaptersRef.current[i]);
+                        }}
+                        className="text-pretty text-inherit"
+                      >{`Ch. ${chapter.number} ${chapter.title}`}</a>
+                    </summary>
                     <ul>
                       {chapter.sections.map(
                         (section, j) =>
                           section.content !== "" && (
                             <li key={j}>
-                              <a>{`${chapter.number}.${section.number} ${section.title}`}</a>
+                              <a
+                                onClick={() => {
+                                  scrollToElement(sectionsRef.current[i][j]);
+                                }}
+                                className="text-pretty text-inherit"
+                              >{`${chapter.number}.${section.number} ${section.title}`}</a>
                             </li>
                           )
                       )}
