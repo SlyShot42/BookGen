@@ -188,6 +188,7 @@ function Landing() {
           <button
             type="submit"
             className="btn btn-wide btn-primary self-center"
+            disabled={topic === ""}
           >
             {loading ? (
               <>

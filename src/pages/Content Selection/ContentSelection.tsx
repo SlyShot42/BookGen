@@ -88,18 +88,18 @@ function BookContentSelector() {
 
   return (
     <section className="h-full" data-theme="autumn">
-      <div className="flex flex-col w-full max-w-7xl m-auto h-full px-2.5">
+      <div className="flex flex-col w-full max-w-7xl m-auto h-full px-0 lg:px-2.5">
         <h1 className="text-center text-5xl lg:text-6xl xl:text-7xl">
           Book Content Selection
         </h1>
-        <div className="divider my-1"></div>
+        <div className="divider mt-1 mb-0 h-0"></div>
 
         <form
           className="h-full overflow-y-auto flex flex-col"
           onSubmit={handleContentSubmit}
         >
           <div className="overflow-y-auto">
-            <article className="prose w-full max-w-3xl mx-auto pr-3.5 text-xs md:text-base lg:text-3xl">
+            <article className="prose w-full max-w-3xl mx-auto pr-3.5 text-xs md:text-base lg:text-3xl px-2.5 lg:px-0">
               <ol>
                 {chapters.map((chapter: ContentifiedChapterDetailsType) => (
                   <li key={chapter.number}>
@@ -167,10 +167,11 @@ function BookContentSelector() {
               </ol>
             </article>
           </div>
-          <div className="divider my-1"></div>
+          <div className="divider mt-0 mb-1 h-0"></div>
           <button
             type="submit"
             className="btn btn-wide btn-primary self-center my-3"
+            disabled={getSelectedIndices(sectionSelectionState).length === 0}
           >
             Generate Book
           </button>

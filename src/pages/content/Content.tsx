@@ -81,7 +81,7 @@ function Content() {
             <h1 className="text-center text-4xl lg:text-5xl xl:text-7xl">
               Reading + Problems
             </h1>
-            <div className="divider mt-2.5 mb-0"></div>
+            <div className="divider mt-2.5 mb-0 h-0"></div>
 
             <div
               className="overflow-y-auto overscroll-none overflow-x-hidden px-2.5"
@@ -94,8 +94,9 @@ function Content() {
                       <div key={i}>
                         <h2
                           ref={(el) => (chaptersRef.current[i] = el)}
+                          className="text-primary font-extrabold text-4xl lg:text-5xl xl:text-6xl bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 text-transparent bg-clip-text my-5 selection:bg-amber-200 selection:text-black"
                         >{`Ch. ${chapter.number} ${chapter.title}`}</h2>
-                        <div className="divider my-1"></div>
+                        {/* <div className="divider my-1 h-0"></div> */}
                         {chapter.sections.map(
                           (section, j) =>
                             section.content !== "" && (
@@ -107,8 +108,9 @@ function Content() {
                                     }
                                     sectionsRef.current[i][j] = el;
                                   }}
+                                  className="text-secondary font-bold my-4 selection:bg-amber-200 selection:text-black"
                                 >{`Sec. ${chapter.number}.${section.number} ${section.title}`}</h3>
-                                <div className="divider my-1"></div>
+                                {/* <div className="divider my-1 h-0"></div> */}
                                 <Markdown
                                   remarkPlugins={[remarkMath]}
                                   rehypePlugins={[rehypeKatex]}
@@ -173,7 +175,7 @@ function Content() {
                         onClick={() => {
                           scrollToElement(chaptersRef.current[i]);
                         }}
-                        className="text-pretty text-inherit"
+                        className="text-pretty text-inherit hover:text-inherit"
                       >{`Ch. ${chapter.number} ${chapter.title}`}</a>
                     </summary>
                     <ul>
@@ -185,7 +187,7 @@ function Content() {
                                 onClick={() => {
                                   scrollToElement(sectionsRef.current[i][j]);
                                 }}
-                                className="text-pretty text-inherit"
+                                className="text-pretty text-inherit hover:text-inherit"
                               >{`${chapter.number}.${section.number} ${section.title}`}</a>
                             </li>
                           )
