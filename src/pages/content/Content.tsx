@@ -6,9 +6,10 @@ import "katex/dist/katex.min.css";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useChapters } from "../../ChaptersUtils";
-import { useTopic } from "../../TopicUtils";
+// import { useTopic } from "../../TopicUtils";
 import "./mathoverflow.css";
 import { useRef } from "react";
+import Sidebar from "./Sidebar";
 
 // const markdown = `Here is some ruby code:
 
@@ -27,33 +28,20 @@ function Content() {
   // console.log('Hello, world!');
   // \`\`\`
   // `;
+
+  // console.log(toggleDrawerMenu);
   const chaptersRef = useRef<Array<HTMLHeadingElement | null>>([]);
   const sectionsRef = useRef<Array<Array<HTMLHeadingElement | null>>>([]);
 
   const scrollableContainerRef = useRef<HTMLDivElement | null>(null);
 
   const chapters = useChapters();
-  console.log(chapters);
-  const topic = useTopic();
-  console.log(topic);
+  // console.log(chapters);
+  // const topic = useTopic();
+  // console.log(topic);
   const renderChapter = chapters.map((chapter) =>
     chapter.sections.some((section) => section.content!.trim() !== "")
   );
-
-  const scrollToElement = (element: HTMLElement | null) => {
-    if (element && scrollableContainerRef.current) {
-      const container = scrollableContainerRef.current;
-      const elementRect = element.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-
-      const offset = elementRect.top - containerRect.top + container.scrollTop;
-
-      container.scrollTo({
-        top: offset,
-        behavior: "smooth",
-      });
-    }
-  };
 
   return (
     <div
@@ -164,40 +152,12 @@ function Content() {
           aria-label="close sidebar"
           className="drawer-overlay"
         />
-        <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-          {chapters.map(
-            (chapter, i) =>
-              renderChapter[i] && (
-                <li key={i}>
-                  <details>
-                    <summary>
-                      <a
-                        onClick={() => {
-                          scrollToElement(chaptersRef.current[i]);
-                        }}
-                        className="text-pretty text-inherit hover:text-inherit"
-                      >{`Ch. ${chapter.number} ${chapter.title}`}</a>
-                    </summary>
-                    <ul>
-                      {chapter.sections.map(
-                        (section, j) =>
-                          section.content !== "" && (
-                            <li key={j}>
-                              <a
-                                onClick={() => {
-                                  scrollToElement(sectionsRef.current[i][j]);
-                                }}
-                                className="text-pretty text-inherit hover:text-inherit"
-                              >{`${chapter.number}.${section.number} ${section.title}`}</a>
-                            </li>
-                          )
-                      )}
-                    </ul>
-                  </details>
-                </li>
-              )
-          )}
-        </ul>
+        <Sidebar
+          renderChapter={renderChapter}
+          chaptersRef={chaptersRef.current}
+          sectionsRef={sectionsRef.current}
+          scrollableContainerRef={scrollableContainerRef}
+        />
       </div>
     </div>
   );

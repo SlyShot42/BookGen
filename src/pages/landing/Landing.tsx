@@ -178,7 +178,7 @@ function Landing() {
         >
           <label className="hidden">Enter Topic:</label>
           <textarea
-            className="textarea textarea-primary textarea-md font-mono text-neutral font-bold h-full md:max-h-80 lg:max-h-52"
+            className="textarea textarea-primary textarea-md resize-none font-mono text-neutral font-bold h-full md:max-h-80 lg:max-h-52"
             placeholder="Enter the topic you want to study..."
             onChange={(e) =>
               dispatchTopic({ type: "set", payload: e.target.value })
