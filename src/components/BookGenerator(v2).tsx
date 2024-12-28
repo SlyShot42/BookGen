@@ -80,21 +80,15 @@ function BookGenerator({
     // const chapterTitle = chapters[chapterIndex].title;
     const sectionTitle = chapters[chapterIndex].sections[sectionIndex].title;
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-2024-08-06",
+      model: "gpt-4o-2024-11-20",
       messages: [
         {
-          role: "system",
-          content:
-            "You are a course textbook content generation machine designed to output in markdown latex(YOU MUST surround inline latex with $..$ and display latex with $$..$$). Do not acknowledge or greet. Output the content only. Expand on information where appropriate.",
+          role: "developer",
+          content: `You are a course textbook content generation machine designed to output in markdown(surround inline latex with $..$ and display latex with $$..$$). Do not acknowledge or greet. Output the content only. Expand on information where appropriate.`,
         },
         {
           role: "user",
-          content:
-            "Generate the content of the section (do not include section title in reponse): \n" +
-            sectionTitle +
-            "\n in the\n" +
-            topic +
-            "\n textbook.",
+          content: `Generate the content of the section (do not include section title in reponse): \n${sectionTitle}\n in the\n${topic}\n textbook.`,
         },
       ],
       temperature: 0.4,

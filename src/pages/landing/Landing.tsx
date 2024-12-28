@@ -87,10 +87,10 @@ function Landing() {
 
   const fetchTableOfContents = async () => {
     const completion = await openai.beta.chat.completions.parse({
-      model: "gpt-4o-2024-08-06",
+      model: "gpt-4o-2024-11-20",
       messages: [
         {
-          role: "system",
+          role: "developer",
           content: "You are a course textbook writing expert",
         },
         {
@@ -117,6 +117,7 @@ function Landing() {
 
   useEffect(() => {
     let temp = null;
+    // processing any chapter/section numbering issues in table of contents
     if (isSuccess) {
       temp = data!.map((chapter: ChapterDetailsType, index: number) => {
         return {
@@ -192,7 +193,7 @@ function Landing() {
           >
             {loading ? (
               <>
-                <span className="loading loading-spinner"></span>Generating
+                Generating<span className="loading loading-spinner"></span>
               </>
             ) : (
               "Generate Table of Contents"

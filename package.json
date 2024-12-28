@@ -13,7 +13,7 @@
     "@tanstack/react-query": "^5.52.2",
     "@tanstack/react-query-devtools": "^5.52.2",
     "dotenv": "^16.4.5",
-    "openai": "^4.55.3",
+    "openai": "^4.77.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-expanding-textarea": "^2.3.6",
@@ -44,6 +44,6 @@
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "vite": "^5.4.11"
   }
 }

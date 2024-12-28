@@ -66,8 +66,8 @@ function Content() {
                 <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
               </svg>
             </label>
-            <h1 className="text-center text-4xl lg:text-5xl xl:text-7xl">
-              Reading + Problems
+            <h1 className="text-center text-5xl lg:text-6xl xl:text-7xl">
+              BookGen&#128214;
             </h1>
             <div className="divider mt-2.5 mb-0 h-0"></div>
 
@@ -82,7 +82,7 @@ function Content() {
                       <div key={i}>
                         <h2
                           ref={(el) => (chaptersRef.current[i] = el)}
-                          className="text-primary font-extrabold text-4xl lg:text-5xl xl:text-6xl bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 text-transparent bg-clip-text my-5 selection:bg-amber-200 selection:text-black"
+                          className="text-primary font-extrabold text-4xl lg:text-5xl xl:text-6xl bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 text-transparent bg-clip-text my-2 selection:bg-amber-200 selection:text-black"
                         >{`Ch. ${chapter.number} ${chapter.title}`}</h2>
                         {/* <div className="divider my-1 h-0"></div> */}
                         {chapter.sections.map(
