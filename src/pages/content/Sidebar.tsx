@@ -3,7 +3,9 @@ import BookNavigation from "./BookNavigation";
 import Chat from "./Chat";
 import { JSX } from "react/jsx-runtime";
 import { useImmerReducer } from "use-immer";
+import { useTopic } from "../../TopicUtils";
 // import { useChapters } from "../../ChaptersUtils";
+import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 function Sidebar(
   props: JSX.IntrinsicAttributes & {
@@ -18,10 +20,16 @@ function Sidebar(
     false
   );
 
-  const initialChatHistory = [
+  const topic = useTopic();
+
+  const initialChatHistory: ChatCompletionMessageParam[] = [
     {
-      role: "system",
-      content: "Hello! I'm your AI chat assistant. How can I help you today?",
+      role: "developer",
+      content: `You are a helpful AI assistant that is determined to help the user learn their topic: ${topic}.`,
+    },
+    {
+      role: "assistant",
+      content: `Hello! I am here to help you learn about ${topic}.`,
     },
   ];
   const [chatHistory, dispatchChat] = useImmerReducer(
@@ -82,12 +90,17 @@ function Sidebar(
 }
 
 function chatHistoryReducer(
-  draftState: { role: string; content: string }[],
-  action: { type: string; content: string }
-): void | { role: string; content: string }[] {
+  draftState: ChatCompletionMessageParam[],
+  action: { type: string; content: string; current_message_index?: number }
+): void | ChatCompletionMessageParam[] {
   switch (action.type) {
-    case "system message": {
-      draftState.push({ role: "system", content: action.content });
+    case "assistant message": {
+      if (action.current_message_index === draftState.length - 1) {
+        draftState.push({ role: "assistant", content: action.content });
+      } else {
+        draftState[draftState.length - 1].content += action.content;
+      }
+      // draftState.push({ role: "assistant", content: action.content });
       break;
     }
     case "user message": {

@@ -1,9 +1,9 @@
 import OpenAI from "openai";
 import { useImmerReducer } from "use-immer";
-import { ContentifiedChapterDetails } from "../pages/landing/Landing";
+import { ContentifiedChapterDetailsType } from "../pages/landing/Landing";
 import { useEffect } from "react";
 import { useRef } from "react";
-import { z } from "zod";
+// import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 
 const openai = new OpenAI({
@@ -11,9 +11,9 @@ const openai = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
-type ContentifiedChapterDetailsType = z.infer<
-  typeof ContentifiedChapterDetails
->;
+// type ContentifiedChapterDetailsType = z.infer<
+//   typeof ContentifiedChapterDetails
+// >;
 // type ChapterDetailsType = z.infer<typeof ChapterDetails>;
 
 function BookGenerator({
@@ -66,21 +66,15 @@ function BookGenerator({
       let content: string | null = "";
       try {
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o-2024-08-06",
+          model: "chatgpt-4o-latest",
           messages: [
             {
-              role: "system",
-              content:
-                "You are a course textbook content generation machine designed to output in markdown(surround inline latex with $..$ and display latex with $$..$$). Do not acknowledge or greet. Output the content only. Expand on information where appropriate.",
+              role: "developer",
+              content: `You are a course textbook content generation machine designed to output in markdown(surround inline latex with $..$ and display latex with $$..$$). Do not acknowledge or greet. Output the content only. Expand on information where appropriate.`,
             },
             {
               role: "user",
-              content:
-                "Generate the content of the section (do not include section title in reponse): \n" +
-                title +
-                "\n in the\n" +
-                topic +
-                "\n textbook.",
+              content: `Generate the content of the section (do not include section title in reponse): \n${title}\n in the\n${topic}\n textbook.`,
             },
           ],
           temperature: 0.4,
