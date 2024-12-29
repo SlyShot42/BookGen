@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 // import SelectionCards from "./SelectionCards";
 // import {useState} from 'react';
 // import { useEffect } from "react";
@@ -10,7 +10,7 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { useNavigate } from "react-router-dom";
 import BookGenerator from "../../components/BookGenerator(v2)";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useChapters, useChaptersDispatch } from "../../ChaptersUtils";
 import { useTopic, useTopicDispatch } from "../../TopicUtils";
 // import dotenv from 'dotenv';
@@ -85,41 +85,29 @@ function Landing() {
 
   const navigate = useNavigate();
 
-  const fetchTableOfContents = async () => {
-    const completion = await openai.beta.chat.completions.parse({
-      model: "gpt-4o-2024-11-20",
-      messages: [
-        {
-          role: "developer",
-          content: "You are a course textbook writing expert",
-        },
-        {
-          role: "user",
-          content: `Generate the table of contents (include chapter and sections) for a textbook on ${topic}`,
-        },
-      ],
-      response_format: zodResponseFormat(TableOfContents, "table_of_contents"),
-    });
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const completion = await openai.beta.chat.completions.parse({
+        model: "gpt-4o-2024-11-20",
+        messages: [
+          {
+            role: "developer",
+            content: "You are a course textbook writing expert",
+          },
+          {
+            role: "user",
+            content: `Generate the table of contents (include chapter and sections) for a textbook on ${topic}`,
+          },
+        ],
+        response_format: zodResponseFormat(
+          TableOfContents,
+          "table_of_contents"
+        ),
+      });
 
-    return completion.choices[0].message.parsed?.chapters;
-  };
-  const { data, isLoading, isSuccess, refetch } = useQuery({
-    queryKey: ["generateTableOfContents"],
-    queryFn: fetchTableOfContents,
-    enabled: false,
-  });
+      const data = completion.choices[0].message.parsed?.chapters;
 
-  const loading = isLoading;
-  const chapters: ContentifiedChapterDetailsType[] | null = useChapters();
-
-  const dispatchChapters = useChaptersDispatch();
-  // const lock = useRef(true);
-
-  useEffect(() => {
-    let temp = null;
-    // processing any chapter/section numbering issues in table of contents
-    if (isSuccess) {
-      temp = data!.map((chapter: ChapterDetailsType, index: number) => {
+      const temp = data!.map((chapter: ChapterDetailsType, index: number) => {
         return {
           ...chapter,
           number: index + 1,
@@ -135,13 +123,23 @@ function Landing() {
         };
       });
       dispatchChapters({ type: "initialize", payload: temp });
+    },
+    onSuccess: () => {
+      console.log("AI response successfully processed.");
       (document.getElementById("my_modal") as HTMLDialogElement)?.showModal();
-    }
-  }, [isSuccess, data, dispatchChapters]);
+    },
+    onError: (error: Error) => {
+      console.error("Error fetching AI response:", error);
+      // Optionally, notify the user about the error
+    },
+  });
 
+  const chapters: ContentifiedChapterDetailsType[] | null = useChapters();
+
+  const dispatchChapters = useChaptersDispatch();
   const handleTopicSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    refetch();
+    mutation.mutate();
   };
 
   const handleFullGenerate = () => {
@@ -191,7 +189,7 @@ function Landing() {
             className="btn btn-wide btn-primary self-center"
             disabled={topic === ""}
           >
-            {loading ? (
+            {mutation.isPending ? (
               <>
                 Generating<span className="loading loading-spinner"></span>
               </>

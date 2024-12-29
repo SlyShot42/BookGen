@@ -40,7 +40,7 @@ function Chat({
   const mutation = useMutation({
     mutationFn: async (updatedChatHistory: ChatCompletionMessageParam[]) => {
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o-2024-11-20",
+        model: "gpt-4o-mini",
         messages: updatedChatHistory,
         stream: true,
       });
