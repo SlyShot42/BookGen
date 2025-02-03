@@ -8,20 +8,31 @@ import { useTopic } from "../TopicUtils";
 import { useEffect } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 import { useNavigate } from "react-router-dom";
+import { zodResponseFormat } from "openai/helpers/zod.mjs";
+import { z } from "zod";
+import {
+  Problem,
+  ProblemType,
+  ContentDetailsType,
+} from "../pages/landing/Landing";
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
-function BookGenerator({
-  sectionSelections,
-}: {
-  sectionSelections: [number, number][];
-}) {
+function BookGenerator({ selections }: { selections?: [number, number][] }) {
   const chapters = useChapters();
   const chaptersDispatch = useChaptersDispatch();
+  const sectionSelections: [number, number][] = selections ?? [];
 
+  if (sectionSelections.length === 0) {
+    chapters.forEach((chapter, i) => {
+      chapter.sections.forEach((_, j) => {
+        sectionSelections.push([i, j]);
+      });
+    });
+  }
   const topic = useTopic();
 
   const combinedQueries = useQueries({
@@ -74,12 +85,20 @@ function BookGenerator({
     navigate,
   ]);
 
+  const markdownFormatting = (text: string) => {
+    return text
+      .replace(/\\\[(.*?)\\\]/gs, "$$$$" + "$1" + "$$$$")
+      .replace(/\\\((.*?)\\\)/gs, function (_, p1) {
+        return "$" + p1 + "$";
+      });
+  };
+
   const generateBook = async (position: number[]) => {
     const chapterIndex = position[0];
     const sectionIndex = position[1];
     // const chapterTitle = chapters[chapterIndex].title;
     const sectionTitle = chapters[chapterIndex].sections[sectionIndex].title;
-    const completion = await openai.chat.completions.create({
+    const markdownResponse = await openai.chat.completions.create({
       model: "gpt-4o-2024-11-20",
       messages: [
         {
@@ -94,12 +113,82 @@ function BookGenerator({
       temperature: 0.4,
     });
     console.log(`${chapterIndex + 1}.${sectionIndex + 1}`);
-    const content = completion.choices[0].message.content
-      ?.replace(/\\\[(.*?)\\\]/gs, "$$$$" + "$1" + "$$$$")
-      .replace(/\\\((.*?)\\\)/gs, function (_, p1) {
-        return "$" + p1 + "$";
-      });
-    console.log(content);
+    const article = markdownFormatting(
+      markdownResponse.choices[0].message.content!
+    );
+    console.log(article);
+
+    const examples = `Problems: [
+            {
+                code: "MCQ",
+                statement: "What is the capital of France?",
+                options: ["Paris", "London", "Berlin", "Madrid"],
+                answer: "Paris"
+            },
+            {
+                code: "FRQ",
+                statement: "Who is Elon Musk?",
+                answer: "Elon Musk is the CEO of Tesla."
+            },
+            {
+                code: "CODE",
+                statement: "Complete the function add(a,b) that returns the sum of two numbers",
+                setup: "def add(a, b): \n\t# your code here",
+            }
+        ]`;
+
+    const numProblems = 2;
+    const generatedProblems = await openai.beta.chat.completions.parse({
+      model: "gpt-4o-2024-11-20",
+      messages: [
+        {
+          role: "system",
+          content: `You are a course textbook problem generation machine designed to output in JSON in the format: \n
+            ${examples}
+            \nUse markdown(surround any inline latex math expressions with $..$ and display latex math expressions with $$..$$) for statement field. The setup field for any CODE problem is to contain only setup code for the problem and nothing else. For the code problem statement, include any and all necessary information for the user to understand the problem along with the functions and variables to be used in the testcases. Ensure that correct code generated adheres strictly to the structure layed out in the setup code. Similarly, ensure that each testcase can run independently when appended to the correct code individually. LEAVE NO ROOM FOR AMBIGUITY.`,
+        },
+        {
+          role: "user",
+          content: `Generate exactly ${numProblems} problems of random types for the section: \n ${sectionTitle} \n in the ${topic} textbook.
+            \nreferencing the section content\n
+            ${article}`,
+        },
+      ],
+      response_format: zodResponseFormat(
+        z.object({
+          Problems: z.array(Problem),
+        }),
+        "Problems"
+      ),
+      seed: 138,
+      temperature: 0.2,
+    });
+
+    console.log(generatedProblems.choices[0].message.parsed?.Problems);
+
+    generatedProblems.choices[0].message.parsed?.Problems.forEach(
+      (problem: ProblemType) => {
+        problem.statement = markdownFormatting(problem.statement);
+        switch (problem.code) {
+          case "FRQ":
+            problem.answer = markdownFormatting(problem.answer);
+            break;
+          case "MCQ":
+            problem.options = problem.options.map((option: string) => {
+              return markdownFormatting(option);
+            });
+            break;
+          default:
+            break;
+        }
+      }
+    );
+
+    const content: ContentDetailsType = {
+      article: article,
+      problems: generatedProblems.choices[0].message.parsed?.Problems ?? [],
+    };
+
     return content;
   };
 

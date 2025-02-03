@@ -120,7 +120,7 @@ function Chat({
           {chatHistory.map((message: ChatCompletionMessageParam, i: number) =>
             message.role === "assistant" ? (
               <div
-                key={i}
+                key={`${message.role}-${i}`}
                 className={
                   i === chatHistory.length - 1
                     ? "chat chat-start pb-2"
@@ -177,7 +177,7 @@ function Chat({
                 </div>
               </div>
             ) : message.role === "user" ? (
-              <div key={i} className="chat chat-end">
+              <div key={`${message.role}-${i}`} className="chat chat-end">
                 <div className="chat-header">You</div>
                 <div className="chat-bubble">
                   {typeof message.content === "string" ? message.content : ""}

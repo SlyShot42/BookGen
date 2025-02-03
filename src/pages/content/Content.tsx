@@ -9,7 +9,7 @@ import { useChapters } from "../../ChaptersUtils";
 // import { useTopic } from "../../TopicUtils";
 import "./mathoverflow.css";
 import { useRef } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "./sidebar/Sidebar";
 
 // const markdown = `Here is some ruby code:
 
@@ -40,7 +40,7 @@ function Content() {
   // const topic = useTopic();
   // console.log(topic);
   const renderChapter = chapters.map((chapter) =>
-    chapter.sections.some((section) => section.content!.trim() !== "")
+    chapter.sections.some((section) => section.content.article.trim() !== "")
   );
 
   return (
@@ -87,7 +87,7 @@ function Content() {
                         {/* <div className="divider my-1 h-0"></div> */}
                         {chapter.sections.map(
                           (section, j) =>
-                            section.content !== "" && (
+                            section.content.article !== "" && (
                               <div key={j}>
                                 <h3
                                   ref={(el) => {
@@ -102,7 +102,7 @@ function Content() {
                                 <Markdown
                                   remarkPlugins={[remarkMath]}
                                   rehypePlugins={[rehypeKatex]}
-                                  children={section.content}
+                                  children={section.content.article}
                                   components={{
                                     code(props) {
                                       // eslint-disable-next-line @typescript-eslint/no-unused-vars

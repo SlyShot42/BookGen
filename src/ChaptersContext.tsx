@@ -1,5 +1,9 @@
 import { createContext, useEffect } from "react";
-import { ContentifiedChaptersArrayType } from "./pages/landing/Landing";
+import {
+  ContentDetailsType,
+  ContentifiedChaptersArrayType,
+} from "./pages/landing/Landing";
+// import { ProblemType } from "./pages/landing/Landing";
 import { ImmerReducer, useImmerReducer } from "use-immer";
 
 type InitializeAction = {
@@ -7,13 +11,19 @@ type InitializeAction = {
   payload: ContentifiedChaptersArrayType;
 };
 
-type AddSectionContentAction = {
+type AddSectionArticleAction = {
   type: "add_section_content";
   sectionIndex: [number, number];
-  content: string | null | undefined;
+  content: ContentDetailsType | null | undefined;
 };
 
-type Action = InitializeAction | AddSectionContentAction;
+// type AddSectionProblemAction = {
+//   type: "add_section_problem";
+//   sectionIndex: [number, number];
+//   problem: ProblemType;
+// }
+
+type Action = InitializeAction | AddSectionArticleAction;
 
 export const ChaptersContext =
   createContext<ContentifiedChaptersArrayType | null>(null);
@@ -54,6 +64,11 @@ const chaptersReducer: ImmerReducer<ContentifiedChaptersArrayType, Action> = (
       draft[action.sectionIndex[0]].sections[action.sectionIndex[1]].content =
         action.content!;
       return draft;
+    // case "add_section_problem":
+    //   draft[action.sectionIndex[0]].sections[action.sectionIndex[1]].content.problems.push(
+    //     action.problem
+    //   );
+    //   return draft;
     default:
       throw new Error(`Unhandled action type: ${action}`);
   }

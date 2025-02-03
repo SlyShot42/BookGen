@@ -3,7 +3,7 @@ import BookNavigation from "./BookNavigation";
 import Chat from "./Chat";
 import { JSX } from "react/jsx-runtime";
 import { useImmerReducer } from "use-immer";
-import { useTopic } from "../../TopicUtils";
+import { useTopic } from "../../../TopicUtils";
 // import { useChapters } from "../../ChaptersUtils";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 

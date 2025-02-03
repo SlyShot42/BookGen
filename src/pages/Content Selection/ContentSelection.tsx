@@ -24,10 +24,10 @@ function BookContentSelector() {
   const chapters = useChapters();
   // const [chapterSelectionState, dispatchSelectionState] = useImmerReducer(chapterSelectionReducer, Array(chapters.length).fill(false));
   const initialSectionSelectionState = chapters.map((chapter) => {
-    return chapter.sections.map((section) => section.content !== "");
+    return chapter.sections.map((section) => section.content.article !== "");
   });
   const initialChapterSelectionState = chapters.map((chapter) =>
-    chapter.sections.every((section) => section.content !== "")
+    chapter.sections.every((section) => section.content.article !== "")
   );
 
   const chapterSelectionState = useRef(initialChapterSelectionState);
@@ -185,7 +185,7 @@ function BookContentSelector() {
         <div className="modal-box">
           {submitSelection && (
             <BookGenerator
-              sectionSelections={getSelectedIndices(sectionSelectionState)}
+              selections={getSelectedIndices(sectionSelectionState)}
             />
           )}
         </div>

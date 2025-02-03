@@ -11,13 +11,14 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { useNavigate } from "react-router-dom";
 import BookGenerator from "../../components/BookGenerator(v2)";
 import { useMutation } from "@tanstack/react-query";
-import { useChapters, useChaptersDispatch } from "../../ChaptersUtils";
+import { useChaptersDispatch } from "../../ChaptersUtils";
 import { useTopic, useTopicDispatch } from "../../TopicUtils";
 // import dotenv from 'dotenv';
 // dotenv.config();
 // console.log(process.env);
 // import * as dotenv from 'dotenv';
 // dotenv.config();
+
 const SectionDetails = z.object({
   number: z.number(),
   title: z.string(),
@@ -34,8 +35,36 @@ const ChaptersArray = z.array(ChapterDetails);
 type ChapterDetailsType = z.infer<typeof ChapterDetails>;
 type SectionDetailsType = z.infer<typeof SectionDetails>;
 
+const FreeResponse = z.object({
+  code: z.literal("FRQ"),
+  statement: z.string(),
+  answer: z.string(),
+});
+
+const MultipleChoice = z.object({
+  code: z.literal("MCQ"),
+  statement: z.string(),
+  options: z.array(z.string()),
+  answer: z.string(),
+});
+
+const Code = z.object({
+  code: z.literal("CODE"),
+  statement: z.string(),
+  setup: z.string(),
+  correctCode: z.string(),
+  testCases: z.array(z.string()),
+});
+
+export const Problem = z.union([FreeResponse, MultipleChoice, Code]);
+
+const ContentDetails = z.object({
+  article: z.string(),
+  problems: z.array(Problem),
+});
+
 const ContentifiedSectionDetails = SectionDetails.extend({
-  content: z.string().optional(),
+  content: ContentDetails,
 });
 
 const ContentifiedChapterDetails = ChapterDetails.extend({
@@ -45,6 +74,10 @@ const ContentifiedChapterDetails = ChapterDetails.extend({
 const ContentifiedChaptersArray = z.array(ContentifiedChapterDetails);
 
 type ContentifiedChaptersArrayType = z.infer<typeof ContentifiedChaptersArray>;
+
+type ProblemType = z.infer<typeof Problem>;
+
+type ContentDetailsType = z.infer<typeof ContentDetails>;
 
 type ContentifiedSectionDetailsType = z.infer<
   typeof ContentifiedSectionDetails
@@ -62,6 +95,8 @@ const TableOfContents = z.object({
 
 // export { SectionDetails, ChapterDetails };
 export type {
+  ProblemType,
+  ContentDetailsType,
   ContentifiedSectionDetailsType,
   ContentifiedChapterDetailsType,
   ContentifiedChaptersArrayType,
@@ -116,7 +151,10 @@ function Landing() {
               return {
                 ...section,
                 number: i + 1,
-                content: "",
+                content: {
+                  article: "",
+                  problems: [],
+                },
               };
             }
           ),
@@ -134,8 +172,6 @@ function Landing() {
     },
   });
 
-  const chapters: ContentifiedChapterDetailsType[] | null = useChapters();
-
   const dispatchChapters = useChaptersDispatch();
   const handleTopicSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -148,18 +184,6 @@ function Landing() {
 
   const handleContentSelection = () => {
     navigate("/book");
-  };
-
-  const generateIndices = () => {
-    const selectedIndices: [number, number][] = [];
-
-    chapters.forEach((chapter, i) => {
-      chapter.sections.forEach((_, j) => {
-        selectedIndices.push([i, j]);
-      });
-    });
-
-    return selectedIndices;
   };
 
   return (
@@ -207,7 +231,7 @@ function Landing() {
       >
         <div className="modal-box">
           {generateFull ? (
-            <BookGenerator sectionSelections={generateIndices()} />
+            <BookGenerator />
           ) : (
             <>
               <h3 className="font-bold text-lg">

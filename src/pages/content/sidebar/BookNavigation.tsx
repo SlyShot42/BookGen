@@ -1,4 +1,4 @@
-import { useChapters } from "../../ChaptersUtils";
+import { useChapters } from "../../../ChaptersUtils";
 
 function BookNavigation({
   renderChapter,
@@ -46,7 +46,7 @@ function BookNavigation({
                 <ul>
                   {chapter.sections.map(
                     (section, j) =>
-                      section.content !== "" && (
+                      section.content.article !== "" && (
                         <li key={j}>
                           <a
                             onClick={() => {
