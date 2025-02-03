@@ -1,9 +1,3 @@
-import Markdown from "react-markdown";
-import rehypeKatex from "rehype-katex";
-import remarkMath from "remark-math";
-import "katex/dist/katex.min.css";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 // import { useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { useImmerReducer } from "use-immer";
@@ -11,6 +5,7 @@ import OpenAI from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { useMutation } from "@tanstack/react-query";
 import { useRef } from "react";
+import MyMarkdown from "../../../components/MyMarkdown";
 // import { useEffect } from "react";
 
 const openai = new OpenAI({
@@ -133,44 +128,12 @@ function Chat({
                     <span className="loading loading-dots loading-sm"></span>
                   ) : (
                     <article>
-                      <Markdown
-                        remarkPlugins={[remarkMath]}
-                        rehypePlugins={[rehypeKatex]}
-                        children={
+                      <MyMarkdown
+                        content={
                           typeof message.content === "string"
                             ? message.content
                             : ""
                         }
-                        components={{
-                          code(props) {
-                            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                            const {
-                              children,
-                              className,
-                              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                              node,
-                              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                              ref,
-                              ...rest
-                            } = props;
-                            const match = /language-(\w+)/.exec(
-                              className || ""
-                            );
-                            return match ? (
-                              <SyntaxHighlighter
-                                {...rest}
-                                PreTag="div"
-                                children={String(children).replace(/\n$/, "")}
-                                language={match[1]}
-                                style={oneDark}
-                              />
-                            ) : (
-                              <code {...rest} className={className}>
-                                {children}
-                              </code>
-                            );
-                          },
-                        }}
                       />
                     </article>
                   )}

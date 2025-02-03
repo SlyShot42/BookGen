@@ -1,15 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import Markdown from "react-markdown";
-import rehypeKatex from "rehype-katex";
-import remarkMath from "remark-math";
-import "katex/dist/katex.min.css";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useChapters } from "../../ChaptersUtils";
 // import { useTopic } from "../../TopicUtils";
 import "./mathoverflow.css";
 import { useRef } from "react";
 import Sidebar from "./sidebar/Sidebar";
+import MyMarkdown from "../../components/MyMarkdown";
 
 // const markdown = `Here is some ruby code:
 
@@ -99,42 +94,7 @@ function Content() {
                                   className="text-secondary font-bold my-4 selection:bg-amber-200 selection:text-black"
                                 >{`Sec. ${chapter.number}.${section.number} ${section.title}`}</h3>
                                 {/* <div className="divider my-1 h-0"></div> */}
-                                <Markdown
-                                  remarkPlugins={[remarkMath]}
-                                  rehypePlugins={[rehypeKatex]}
-                                  children={section.content.article}
-                                  components={{
-                                    code(props) {
-                                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                                      const {
-                                        children,
-                                        className,
-                                        node,
-                                        ref,
-                                        ...rest
-                                      } = props;
-                                      const match = /language-(\w+)/.exec(
-                                        className || ""
-                                      );
-                                      return match ? (
-                                        <SyntaxHighlighter
-                                          {...rest}
-                                          PreTag="div"
-                                          children={String(children).replace(
-                                            /\n$/,
-                                            ""
-                                          )}
-                                          language={match[1]}
-                                          style={oneDark}
-                                        />
-                                      ) : (
-                                        <code {...rest} className={className}>
-                                          {children}
-                                        </code>
-                                      );
-                                    },
-                                  }}
-                                />
+                                <MyMarkdown content={section.content.article} />
                               </div>
                             )
                         )}
