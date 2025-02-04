@@ -12,7 +12,7 @@ export default {
     // eslint-disable-next-line no-undef
     require("@tailwindcss/typography"),
     require('daisyui'),
-    require('@tailwindcss/forms')
+    // require('@tailwindcss/forms')
   ],
   daisyui: {
     themes: ["autumn","light","dark","aqua"], // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]

@@ -76,6 +76,9 @@ const ContentifiedChaptersArray = z.array(ContentifiedChapterDetails);
 type ContentifiedChaptersArrayType = z.infer<typeof ContentifiedChaptersArray>;
 
 type ProblemType = z.infer<typeof Problem>;
+type MultipleChoiceType = z.infer<typeof MultipleChoice>;
+type FreeResponseType = z.infer<typeof FreeResponse>;
+type CodeType = z.infer<typeof Code>;
 
 type ContentDetailsType = z.infer<typeof ContentDetails>;
 
@@ -96,6 +99,9 @@ const TableOfContents = z.object({
 // export { SectionDetails, ChapterDetails };
 export type {
   ProblemType,
+  MultipleChoiceType,
+  FreeResponseType,
+  CodeType,
   ContentDetailsType,
   ContentifiedSectionDetailsType,
   ContentifiedChapterDetailsType,

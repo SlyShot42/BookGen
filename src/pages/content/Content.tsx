@@ -5,6 +5,8 @@ import "./mathoverflow.css";
 import { useRef } from "react";
 import Sidebar from "./sidebar/Sidebar";
 import MyMarkdown from "../../components/MyMarkdown";
+// import { Problem } from "../landing/Landing";
+import ProblemFactory from "../../components/ProblemFactory";
 
 // const markdown = `Here is some ruby code:
 
@@ -91,10 +93,18 @@ function Content() {
                                     }
                                     sectionsRef.current[i][j] = el;
                                   }}
-                                  className="text-secondary font-bold my-4 selection:bg-amber-200 selection:text-black"
+                                  className="text-secondary text-2xl lg:text-3xl xl:text-4xl font-bold my-4 selection:bg-amber-200 selection:text-black"
                                 >{`Sec. ${chapter.number}.${section.number} ${section.title}`}</h3>
                                 {/* <div className="divider my-1 h-0"></div> */}
                                 <MyMarkdown content={section.content.article} />
+                                {section.content.problems.map((problem, k) => (
+                                  <ProblemFactory
+                                    key={k}
+                                    problem={problem}
+                                    sectionIndex={j}
+                                    problemIndex={k}
+                                  />
+                                ))}
                               </div>
                             )
                         )}
