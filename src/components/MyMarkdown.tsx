@@ -5,9 +5,13 @@ import "katex/dist/katex.min.css";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-function MyMarkdown({ content }: { content: string }) {
+function MyMarkdown({
+  content,
+  ...props
+}: React.ComponentProps<typeof Markdown> & { content: string }) {
   return (
     <Markdown
+      {...props}
       remarkPlugins={[remarkMath]}
       rehypePlugins={[rehypeKatex]}
       children={content}
