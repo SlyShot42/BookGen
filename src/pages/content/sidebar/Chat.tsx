@@ -59,12 +59,12 @@ function Chat({
 
   const [TextareaState, dispatchTextareaState] = useImmerReducer(
     textareaStateReducer,
-    ""
+    "",
   );
 
   const mutationIndex = useRef(0);
   const handleTextareaSubmit = (
-    e: React.KeyboardEvent<HTMLTextAreaElement>
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
   ) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -81,6 +81,7 @@ function Chat({
       }
     } else if (e.key === "Enter" && e.shiftKey) {
       // Allow Shift + Enter to create a new line
+      e.preventDefault();
       const textarea = e.currentTarget;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
@@ -110,8 +111,8 @@ function Chat({
   };
   return (
     <>
-      <div className="w-80 max-w-full px-4 pt-4 pb-0 flex flex-col flex-grow overflow-y-auto overscroll-none">
-        <section className="h-full overflow-y-auto overscroll-none flex-grow">
+      <div className="flex w-80 max-w-full grow flex-col overflow-y-auto overscroll-none px-4 pt-4 pb-0">
+        <section className="h-full grow overflow-y-auto overscroll-none">
           {chatHistory.map((message: ChatCompletionMessageParam, i: number) =>
             message.role === "assistant" ? (
               <div
@@ -148,28 +149,30 @@ function Chat({
               </div>
             ) : (
               <></>
-            )
+            ),
           )}
         </section>
       </div>
-      <div className="join join-horizontal flex-grow-0 p-2 pt-0">
+      <div className="grow-0 p-2 pt-0">
         <form className="size-full" onSubmit={handleButtonSubmit}>
-          <div className="join join-horizontal size-full flex-grow-0 p-0">
+          <div className="join join-horizontal size-full grow-0 p-0">
             <TextareaAutosize
-              className="input textarea resize-none w-full join-item"
+              className="textarea join-item h-auto min-h-0 w-full resize-none"
               placeholder="Ask GPT"
               maxLength={3000}
-              maxRows={3}
+              minRows={1} // Start at 1 row
+              maxRows={3} // Expand up to 3 rows
               value={TextareaState}
               onChange={(e) =>
                 dispatchTextareaState({ type: "set", message: e.target.value })
               }
               onKeyDown={(e) => handleTextareaSubmit(e)}
               disabled={mutation.isPending}
+              autoFocus
             />
             <button
               type="submit"
-              className="btn btn-secondary h-full join-item"
+              className="btn btn-secondary join-item h-full"
               disabled={mutation.isPending}
             >
               <svg
@@ -196,7 +199,7 @@ function Chat({
 
 function textareaStateReducer(
   draft: string,
-  action: { type: string; message?: string }
+  action: { type: string; message?: string },
 ) {
   switch (action.type) {
     case "set":

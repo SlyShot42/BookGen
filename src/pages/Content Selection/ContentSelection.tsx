@@ -27,7 +27,7 @@ function BookContentSelector() {
     return chapter.sections.map((section) => section.content.article !== "");
   });
   const initialChapterSelectionState = chapters.map((chapter) =>
-    chapter.sections.every((section) => section.content.article !== "")
+    chapter.sections.every((section) => section.content.article !== ""),
   );
 
   const chapterSelectionState = useRef(initialChapterSelectionState);
@@ -35,7 +35,7 @@ function BookContentSelector() {
     useImmerReducer(sectionSelectionReducer, initialSectionSelectionState);
   const [submitSelection, dispatchSubmitSelection] = useImmerReducer(
     submitSelectionReducer,
-    false
+    false,
   );
   // console.log(chapterSelectionState);
   console.log(sectionSelectionState);
@@ -88,23 +88,23 @@ function BookContentSelector() {
 
   return (
     <section className="h-full" data-theme="autumn">
-      <div className="flex flex-col w-full max-w-7xl m-auto h-full px-0 lg:px-2.5">
+      <div className="m-auto flex h-full w-full max-w-7xl flex-col px-0 lg:px-2.5">
         <h1 className="text-center text-5xl lg:text-6xl xl:text-7xl">
           Book Content Selection
         </h1>
         <div className="divider mt-1 mb-0 h-0"></div>
 
         <form
-          className="h-full overflow-y-auto flex flex-col"
+          className="flex h-full flex-col overflow-y-auto"
           onSubmit={handleContentSubmit}
         >
-          <div className="overflow-y-auto">
-            <article className="prose w-full max-w-3xl mx-auto pr-3.5 text-xs md:text-base lg:text-3xl px-2.5 lg:px-0">
+          <div className="grow overflow-y-auto">
+            <article className="prose mx-auto w-full max-w-3xl px-2.5 pr-3.5 text-base lg:px-0 lg:text-3xl">
               <ol>
                 {chapters.map((chapter: ContentifiedChapterDetailsType) => (
                   <li key={chapter.number}>
                     <div className="group">
-                      <label className="label cursor-pointer">
+                      <label className="label w-full cursor-pointer">
                         <span className="label-text text-wrap">
                           <strong>{chapter.title}</strong>
                         </span>
@@ -113,7 +113,7 @@ function BookContentSelector() {
                             initialChapterSelectionState[chapter.number - 1]
                           }
                           type="checkbox"
-                          className="checkbox checkbox-primary"
+                          className="checkbox checkbox-primary checkbox-md lg:checkbox-lg ml-auto"
                           checked={sectionSelectionState[
                             chapter.number - 1
                           ].every((section: boolean) => section)}
@@ -123,7 +123,7 @@ function BookContentSelector() {
                         />
                       </label>
                       <div
-                        className={`divider my-1 group-hover:divider-primary ${
+                        className={`divider group-hover:divider-primary my-1 ${
                           chapterSelectionState.current[chapter.number - 1] &&
                           "divider-primary"
                         }`}
@@ -133,7 +133,7 @@ function BookContentSelector() {
                       {chapter.sections.map(
                         (section: ContentifiedSectionDetailsType) => (
                           <li key={section.number}>
-                            <label className="label cursor-pointer">
+                            <label className="label w-full cursor-pointer">
                               <span className="label-text text-wrap">
                                 {section.title}
                               </span>
@@ -144,7 +144,7 @@ function BookContentSelector() {
                                   ][section.number - 1]
                                 }
                                 type="checkbox"
-                                className="checkbox checkbox-sm checkbox-primary"
+                                className="checkbox checkbox-sm lg:checkbox-md checkbox-primary ml-auto"
                                 checked={
                                   sectionSelectionState[chapter.number - 1][
                                     section.number - 1
@@ -159,7 +159,7 @@ function BookContentSelector() {
                               />
                             </label>
                           </li>
-                        )
+                        ),
                       )}
                     </ol>
                   </li>
@@ -170,7 +170,7 @@ function BookContentSelector() {
           <div className="divider mt-0 mb-1 h-0"></div>
           <button
             type="submit"
-            className="btn btn-wide btn-primary self-center my-3"
+            className="btn btn-wide btn-primary my-3 self-center"
             disabled={getSelectedIndices(sectionSelectionState).length === 0}
           >
             Generate Book
@@ -207,7 +207,7 @@ function submitSelectionReducer(_: boolean, action: { type: string }) {
 
 function sectionSelectionReducer(
   draft: boolean[][],
-  action: { type: string; indices: [number, number][] }
+  action: { type: string; indices: [number, number][] },
 ) {
   switch (action.type) {
     case "toggle section selection": {

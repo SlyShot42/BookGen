@@ -37,21 +37,21 @@ function Content() {
   // const topic = useTopic();
   // console.log(topic);
   const renderChapter = chapters.map((chapter) =>
-    chapter.sections.some((section) => section.content.article.trim() !== "")
+    chapter.sections.some((section) => section.content.article.trim() !== ""),
   );
 
   return (
     <div
-      className="drawer max-h-screen lg:drawer-open overflow-hidden overscroll-none"
+      className="drawer lg:drawer-open max-h-screen overflow-hidden overscroll-none"
       data-theme="autumn"
     >
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col">
         <section className="max-h-screen overflow-clip">
-          <div className="max-h-screen flex flex-col w-full max-w-7xl m-auto ">
+          <div className="m-auto flex max-h-screen w-full max-w-7xl flex-col">
             <label
               htmlFor="my-drawer-2"
-              className="btn btn-circle btn-ghost drawer-button lg:hidden mt-2"
+              className="btn btn-circle btn-ghost drawer-button mt-2 lg:hidden"
             >
               <svg
                 className="swap-off fill-current"
@@ -69,17 +69,17 @@ function Content() {
             <div className="divider mt-2.5 mb-0 h-0"></div>
 
             <div
-              className="overflow-y-auto overscroll-none overflow-x-hidden px-2.5"
+              className="overflow-x-hidden overflow-y-auto overscroll-none px-2.5"
               ref={scrollableContainerRef}
             >
-              <article className="prose lg:prose-lg xl:prose-xl w-full max-w-3xl mx-auto selection:bg-amber-200 text-pretty">
+              <article className="prose lg:prose-lg xl:prose-xl mx-auto w-full max-w-3xl text-pretty selection:bg-amber-200">
                 {chapters.map(
                   (chapter, i) =>
                     renderChapter[i] && (
                       <div key={i}>
                         <h2
                           ref={(el) => (chaptersRef.current[i] = el)}
-                          className="text-primary font-extrabold text-4xl lg:text-5xl xl:text-6xl bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 text-transparent bg-clip-text my-2 selection:bg-amber-200 selection:text-black"
+                          className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 my-2 text-4xl font-extrabold selection:bg-amber-200 selection:text-black lg:text-5xl xl:text-6xl"
                         >{`Ch. ${chapter.number} ${chapter.title}`}</h2>
                         {/* <div className="divider my-1 h-0"></div> */}
                         {chapter.sections.map(
@@ -93,7 +93,7 @@ function Content() {
                                     }
                                     sectionsRef.current[i][j] = el;
                                   }}
-                                  className="text-secondary text-2xl lg:text-3xl xl:text-4xl font-bold my-4 selection:bg-amber-200 selection:text-black"
+                                  className="text-secondary my-4 text-2xl font-bold selection:bg-amber-200 selection:text-black lg:text-3xl xl:text-4xl"
                                 >{`Sec. ${chapter.number}.${section.number} ${section.title}`}</h3>
                                 {/* <div className="divider my-1 h-0"></div> */}
                                 <MyMarkdown content={section.content.article} />
@@ -106,10 +106,10 @@ function Content() {
                                   />
                                 ))}
                               </div>
-                            )
+                            ),
                         )}
                       </div>
-                    )
+                    ),
                 )}
               </article>
             </div>

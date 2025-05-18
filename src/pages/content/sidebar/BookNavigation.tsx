@@ -29,7 +29,7 @@ function BookNavigation({
   };
 
   return (
-    <ul className="menu menu-lg flex-nowrap bg-base-200 text-base-content w-80 max-w-full p-4 overflow-y-auto overscroll-none flex-grow">
+    <ul className="menu menu-lg flex-nowrap bg-base-200 text-base-content w-80 max-w-full p-4 overflow-y-auto overscroll-none grow">
       {chapters.map(
         (chapter, i) =>
           renderChapter[i] && (

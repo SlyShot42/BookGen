@@ -45,7 +45,7 @@ function Sidebar(
       ) : (
         <BookNavigation {...props} />
       )}
-      <ul className="menu menu-horizontal menu-lg w-full flex bg-accent gap-x-1 flex-grow-0 opacity-100">
+      <ul className="menu menu-horizontal menu-lg w-full flex bg-accent gap-x-1 grow-0 opacity-100">
         <li className="flex-1" onClick={() => dispatchToggleDrawerMenu(false)}>
           <a className="text-pretty text-inherit hover:text-inherit flex items-center bg-accent opacity-80">
             <svg
