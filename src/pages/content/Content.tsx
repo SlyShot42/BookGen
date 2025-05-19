@@ -79,7 +79,7 @@ function Content() {
                       <div key={i}>
                         <h2
                           ref={(el) => (chaptersRef.current[i] = el)}
-                          className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 my-2 text-4xl font-extrabold selection:bg-amber-200 selection:text-black lg:text-5xl xl:text-6xl"
+                          className="my-2 bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 bg-clip-text text-4xl font-extrabold text-transparent selection:bg-amber-200 selection:text-black lg:text-5xl xl:text-6xl"
                         >{`Ch. ${chapter.number} ${chapter.title}`}</h2>
                         {/* <div className="divider my-1 h-0"></div> */}
                         {chapter.sections.map(

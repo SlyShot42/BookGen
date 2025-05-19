@@ -1,9 +1,26 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  themes: autumn --default ;
+};
 
 :root {
   --section-padding: clamp(3.75rem, 7.3vw, 6.25rem);
 }
 
 
+@layer utilities {
+  
+  .prose :where(code):not(pre > code) {
+    border: 0 !important;
+    padding-inline: 0 !important; 
+    background: inherit;
+  }
+
+  .prose pre > code {
+    border: none;
+  }
+}
 /* #root {
   max-width: 1280px;
   margin: 0 auto;

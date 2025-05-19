@@ -13,13 +13,19 @@ function ProblemFactory({
   problemIndex: number;
 }) {
   return (
-    <div className="collapse collapse-arrow bg-base-200 my-3">
+    <div className="collapse-arrow bg-base-200 collapse my-3">
       <input type="checkbox" />
-      <div className="collapse-title text-lg lg:text-xl xl:text-2xl font-bold">
+      <div className="collapse-title text-lg font-bold lg:text-xl xl:text-2xl">
         Problem {sectionIndex + 1}.{problemIndex + 1}: {problem.code}
       </div>
       <div className="collapse-content">
-        {problem.code === "MCQ" && <MultipleChoiceProblem problem={problem} />}
+        {problem.code === "MCQ" && (
+          <MultipleChoiceProblem
+            problem={problem}
+            sectionIndex={sectionIndex}
+            problemIndex={problemIndex}
+          />
+        )}
         {problem.code === "FRQ" && <FreeResponseProblem problem={problem} />}
         {problem.code === "CODE" && <CodeProblem problem={problem} />}
       </div>

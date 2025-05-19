@@ -1,23 +1,44 @@
 import { MultipleChoiceType } from "../pages/landing/Landing";
 import MyMarkdown from "./MyMarkdown";
 
-function MultipleChoiceProblem({ problem }: { problem: MultipleChoiceType }) {
+function MultipleChoiceProblem({
+  problem,
+  sectionIndex,
+  problemIndex,
+}: {
+  problem: MultipleChoiceType;
+  sectionIndex: number;
+  problemIndex: number;
+}) {
   return (
-    <article className="prose prose-p:my-0">
-      <MyMarkdown content={problem.statement} className="font-semibold" />
-      {problem.options.map((option: string, index: number) => {
-        return (
-          <div key={index} className="form-control w-fit">
-            <label className="cursor-pointer label gap-x-3">
-              <input type="radio" name="radio-10" className="radio" />
-              <span className="label-text">
-                <MyMarkdown content={option} />
-              </span>
-            </label>
-          </div>
-        );
-      })}
-    </article>
+    <ul className="menu not-prose w-full p-0">
+      <li>
+        <MyMarkdown
+          content={problem.statement}
+          className="menu-title px-0 py-0"
+        />
+        <ul className="m-0">
+          {problem.options.map((option: string, index: number) => {
+            return (
+              <li key={index} className="w-full">
+                {/* <label className="label cursor-pointer gap-x-3"> */}
+                {/* <span className="text-black"> */}
+                <a className="text-pretty text-inherit hover:text-inherit">
+                  <input
+                    type="radio"
+                    name={`radio-${sectionIndex}.${problemIndex}`}
+                    className="radio"
+                  />
+                  <MyMarkdown content={option} />
+                </a>
+                {/* </span>
+                </label> */}
+              </li>
+            );
+          })}
+        </ul>
+      </li>
+    </ul>
   );
 }
 
