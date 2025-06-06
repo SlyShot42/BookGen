@@ -46,7 +46,7 @@ const MultipleChoice = z.object({
   code: z.literal("MCQ"),
   statement: z.string(),
   options: z.array(z.string()),
-  answer: z.string(),
+  answerIndex: z.number(),
 });
 
 const Code = z.object({

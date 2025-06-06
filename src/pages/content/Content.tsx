@@ -101,6 +101,7 @@ function Content() {
                                   <ProblemFactory
                                     key={k}
                                     problem={problem}
+                                    chapterIndex={i}
                                     sectionIndex={j}
                                     problemIndex={k}
                                   />

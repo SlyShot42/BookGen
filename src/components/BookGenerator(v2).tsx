@@ -114,7 +114,7 @@ function BookGenerator({ selections }: { selections?: [number, number][] }) {
     });
     console.log(`${chapterIndex + 1}.${sectionIndex + 1}`);
     const article = markdownFormatting(
-      markdownResponse.choices[0].message.content!
+      markdownResponse.choices[0].message.content!,
     );
     console.log(article);
 
@@ -123,17 +123,19 @@ function BookGenerator({ selections }: { selections?: [number, number][] }) {
                 code: "MCQ",
                 statement: "What is the capital of France?",
                 options: ["Paris", "London", "Berlin", "Madrid"],
-                answer: "Paris"
+                answerIndex: 0
             },
             {
                 code: "FRQ",
-                statement: "Who is Elon Musk?",
-                answer: "Elon Musk is the CEO of Tesla."
+                statement: "Describe Elon Musk.",
+                answer: "Elon Musk (b. 28 June 1971) is a South-African-born American entrepreneur and engineer best known as the CEO of Tesla, founder & chief engineer of SpaceX, and owner of X Corp. (formerly Twitter); he has also co-founded ventures such as Neuralink, The Boring Company and xAI."
             },
             {
                 code: "CODE",
                 statement: "Complete the function add(a,b) that returns the sum of two numbers",
                 setup: "def add(a, b): \n\t# your code here",
+                correctCode: "def add(a, b): \n\treturn a + b",
+                testCases: ["print(add(1, 2) == 3)", "print(add(-1, 1) == 0)", "print(add(0, 0) == 0)"],
             }
         ]`;
 
@@ -158,7 +160,7 @@ function BookGenerator({ selections }: { selections?: [number, number][] }) {
         z.object({
           Problems: z.array(Problem),
         }),
-        "Problems"
+        "Problems",
       ),
       seed: 138,
       temperature: 0.2,
@@ -181,7 +183,7 @@ function BookGenerator({ selections }: { selections?: [number, number][] }) {
           default:
             break;
         }
-      }
+      },
     );
 
     const content: ContentDetailsType = {
