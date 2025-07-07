@@ -1,8 +1,8 @@
 # Generate TOC Lambda Function (Python)
 
-This directory contains the serverless backend for BookGen.  The project is built
+This directory contains the serverless backend for BookGen. The project is built
 with the AWS Serverless Application Model (SAM) and deploys a single Lambda
-function that generates table of contents data for the frontend.  The function is
+function that generates table of contents data for the frontend. The function is
 exposed through a Lambda Function URL with CORS settings for local development
 and the production Amplify app.
 
@@ -78,6 +78,7 @@ You can also run the Lambda in a local service with `sam local start-lambda`:
 
 ```bash
 sam local start-lambda
+aws lambda invoke --function-name "GenerateTOCFunction" --endpoint-url "http://127.0.0.1:3001" --no-verify-ssl out.txt
 ```
 
 AWS SAM CLI reads the application template to determine how to invoke your function. The template exposes `GenerateTOCFunction` using a `FunctionUrlConfig` block:

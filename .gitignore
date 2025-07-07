@@ -1,6 +1,8 @@
 .env
 
 sam-iam-creds
+out.txt
+.aws-sam
 
 # Logs
 logs
