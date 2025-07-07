@@ -11,17 +11,17 @@ The application uses several AWS resources. These resources are defined in the `
 If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.  
 The AWS Toolkit is an open source plug-in for popular IDEs that uses the AWS SAM CLI to build and deploy serverless applications on AWS. The AWS Toolkit also adds a simplified step-through debugging experience for Lambda function code. See the following links to get started.
 
-* [CLion](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [GoLand](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [WebStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [Rider](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PhpStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [RubyMine](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [DataGrip](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
-* [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
+- [CLion](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+- [GoLand](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+- [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+- [WebStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+- [Rider](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+- [PhpStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+- [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+- [RubyMine](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+- [DataGrip](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+- [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
+- [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
 
 ## Deploy the sample application
 
@@ -31,27 +31,26 @@ To use the AWS SAM CLI, you need the following tools.
 
 ### Requirements
 
-* AWS SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-* Docker - [Install Docker Desktop](https://hub.docker.com/search/?type=edition&offering=community)
+- AWS SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
+- Docker - [Install Docker Desktop](https://hub.docker.com/search/?type=edition&offering=community)
 
 To build and deploy your application for the first time, run the following in your shell:
 
 ```bash
-cd apigw-rest-api-lambda-python
+cd backend/ai-textbook-service
 sam build --use-container
 sam deploy --guided
 ```
 
 The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
 
-* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
-* **AWS Region**: The AWS region you want to deploy your app to.
-* **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
-* **HelloWorldFunction has no authentication. Is this okay? [y/N]:**: Select `y` for the purposes of this sample application. As a result, anyone will be able to call this example REST API without any form of authentication. For production applications, you should [enable authentication for the API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html) using one of several available options and [follow the API Gateway security best practices](https://docs.aws.amazon.com/apigateway/latest/developerguide/security-best-practices.html). If `N` is selected for this question, this deployment will not succeed.
-* **Allow AWS SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project.
-* 
-For future deploys, you can run `sam deploy` without parameters to deploy changes to your application.
+- **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
+- **AWS Region**: The AWS region you want to deploy your app to.
+- **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
+- **HelloWorldFunction has no authentication. Is this okay? [y/N]:**: Select `y` for the purposes of this sample application. As a result, anyone will be able to call this example REST API without any form of authentication. For production applications, you should [enable authentication for the API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html) using one of several available options and [follow the API Gateway security best practices](https://docs.aws.amazon.com/apigateway/latest/developerguide/security-best-practices.html). If `N` is selected for this question, this deployment will not succeed.
+- **Allow AWS SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
+- **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project.
+- For future deploys, you can run `sam deploy` without parameters to deploy changes to your application.
 
 You can find your API Gateway endpoint URL in the output values displayed after deployment.
 
@@ -77,16 +76,17 @@ curl http://localhost:3000/
 AWS SAM CLI reads the application template to determine the API's routes and the functions they invoke. The `Events` property on each function's definition includes the route and method for each path.
 
 ```yaml
-      Events:
-        HelloWorld:
-          Type: Api
-          Properties:
-            Path: /hello
-            Method: get
+Events:
+  HelloWorld:
+    Type: Api
+    Properties:
+      Path: /hello
+      Method: get
 ```
 
 ## Use AWS SAM CLI to test remotely
-After you have deployed your application, you can remotely invoke your Lambda function to test it in the cloud. 
+
+After you have deployed your application, you can remotely invoke your Lambda function to test it in the cloud.
 
 Invoke functions remotely with the `sam remote invoke` command.
 
@@ -94,9 +94,10 @@ Invoke functions remotely with the `sam remote invoke` command.
 sam remote invoke HelloWorldFunction --event-file events/event.json
 ```
 
-You can also go to the API Gateway endpoint URL that was output after the deployment of your application, which will similarly invoke your deployed Lambda function. 
+You can also go to the API Gateway endpoint URL that was output after the deployment of your application, which will similarly invoke your deployed Lambda function.
 
 ## Fetch, tail, and filter Lambda function logs
+
 To simplify troubleshooting, AWS SAM CLI has a command called `sam logs`. `sam logs` lets you fetch logs generated by your deployed Lambda function from the command line. In addition to printing the logs on the terminal, this command has several nifty features to help you quickly find the bug.
 
 `NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using AWS SAM.

@@ -1,5 +1,7 @@
 .env
 
+sam-iam-creds
+
 # Logs
 logs
 *.log

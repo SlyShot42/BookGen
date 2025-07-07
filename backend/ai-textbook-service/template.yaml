@@ -21,6 +21,17 @@ Resources:
         - x86_64
       FunctionUrlConfig:
         AuthType: AWS_IAM
+        Cors:
+          AllowOrigins:
+            - http://localhost:5173          # local development
+            - https://main.d2xyu58sfma11c.amplifyapp.com
+          AllowMethods:
+            - GET
+            - POST
+          AllowHeaders:
+            - "*"
+          MaxAge: 0
+          AllowCredentials: false
 
 
 Outputs:
