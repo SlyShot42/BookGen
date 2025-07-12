@@ -5,10 +5,18 @@ Description: >
 
   Sample AWS SAM template to create a simple Lambda function connected to a REST API.
 
+Parameters:
+  SecretArn:
+    Type: String
+    Default: arn:aws:secretsmanager:us-west-1:123456789012:secret:my-secret-name
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 180
+    Environment:
+      Variables:
+        OPEN_API_KEY_ARN: !Ref SecretArn
 
 Resources:
   GenerateTOCFunction:
@@ -19,6 +27,11 @@ Resources:
       Runtime: python3.12
       Architectures:
         - x86_64
+      Layers:
+        - arn:aws:lambda:us-west-1:997803712105:layer:AWS-Parameters-and-Secrets-Lambda-Extension:18
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref SecretArn
       FunctionUrlConfig:
         AuthType: NONE
         Cors:
