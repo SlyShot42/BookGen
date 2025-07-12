@@ -1,0 +1,10 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "BookGenStack"
+resolve_s3 = true
+s3_prefix = "BookGenStack"
+region = "us-west-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "SecretArn=\"arn:aws:secretsmanager:us-west-1:268556604879:secret:OPENAI_API_KEY_SECRET-CUsnOn\""
+image_repositories = []

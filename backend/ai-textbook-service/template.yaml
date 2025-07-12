@@ -8,7 +8,7 @@ Description: >
 Parameters:
   SecretArn:
     Type: String
-    Default: arn:aws:secretsmanager:us-west-1:123456789012:secret:my-secret-name
+    Default: arn:aws:secretsmanager:us-west-1:268556604879:secret:OPENAI_API_KEY_SECRET-CUsnOn
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -16,7 +16,7 @@ Globals:
     Timeout: 180
     Environment:
       Variables:
-        OPEN_API_KEY_ARN: !Ref SecretArn
+        OPENAI_API_KEY_ARN: !Ref SecretArn
 
 Resources:
   GenerateTOCFunction:

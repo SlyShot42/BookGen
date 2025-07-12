@@ -1,5 +1,19 @@
 import json
+import os
 import requests
+
+OPENAI_API_KEY_ARN = os.environ["OPENAI_API_KEY_ARN"]
+SECRETS_EXTENSION_ENDPOINT = (
+    f"http://localhost:2773/secretsmanager/get?secretId={OPENAI_API_KEY_ARN}"
+)
+headers = {"X-Aws-Parameters-Secrets-Token": os.environ.get("AWS_SESSION_TOKEN")}
+
+
+def get_openai_api_key():
+    """Fetches the OpenAI API key from AWS Secrets Manager using the Secrets Manager extension."""
+    response = requests.get(SECRETS_EXTENSION_ENDPOINT, headers=headers)
+    secret = response.json()
+    return secret["SecretString"], response.status_code
 
 
 def lambda_handler(event, context):
@@ -25,14 +39,20 @@ def lambda_handler(event, context):
     """
 
     try:
-        ip = requests.get("http://checkip.amazonaws.com/")
-    except requests.RequestException as e:
+        openai_api_key, status_code = get_openai_api_key()
+        print(f"Retrieved secret: {openai_api_key}")
+        return {
+            "statusCode": status_code,
+            "body": json.dumps(
+                {"message": "Successfully retrieved secret", "secretRetrieved": True}
+            ),
+        }
+    except Exception as e:
         # Send some context about this error to Lambda Logs
         print(e)
-
-        raise e
-
-    return {
-        "statusCode": 200,
-        "body": json.dumps(event),
-    }
+        return {
+            "statusCode": 500,
+            "body": json.dumps(
+                {"message": "Failed to retrieve secret", "error": str(e)}
+            ),
+        }
