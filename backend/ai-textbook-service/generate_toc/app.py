@@ -57,7 +57,8 @@ def lambda_handler(event, _):
     """
 
     try:
-        topic = event["topic"]
+        body = json.loads(event["body"])
+        topic = body["topic"]
         openai_api_key, status_code = get_openai_api_key()
         print(f"Retrieved secret: {openai_api_key}")
 
