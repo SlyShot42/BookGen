@@ -19,6 +19,15 @@ Globals:
         OPENAI_API_KEY_ARN: !Ref SecretArn
 
 Resources:
+  SharedHelpersLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: shared-helpers
+      Description: Common helper functions for Lambdas
+      ContentUri: layers/shared/
+      CompatibleRuntimes:
+        - python3.12
+
   GenerateTOCFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -28,6 +37,7 @@ Resources:
       Architectures:
         - x86_64
       Layers:
+        - !Ref SharedHelpersLayer
         - arn:aws:lambda:us-west-1:997803712105:layer:AWS-Parameters-and-Secrets-Lambda-Extension:18
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
