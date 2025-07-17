@@ -102,7 +102,7 @@ After you have deployed your application, you can remotely invoke your Lambda fu
 Invoke functions remotely with the `sam remote invoke` command.
 
 ```bash
-sam remote invoke GenerateTOCFunction --event-file events/event.json
+sam remote invoke GenerateTOCFunction --event-file events/event.json --stack-name BookGenStack
 ```
 
 You can also open the Function URL printed after deployment to invoke your deployed Lambda function.
