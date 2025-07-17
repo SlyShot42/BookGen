@@ -5,9 +5,9 @@ import React from "react";
 // import { ChangeEvent } from "react";
 // import { useRef } from "react";
 import { useImmerReducer } from "use-immer";
-import OpenAI from "openai";
+// import OpenAI from "openai";
 import { z } from "zod";
-import { zodResponseFormat } from "openai/helpers/zod";
+// import { zodResponseFormat } from "openai/helpers/zod";
 import { useNavigate } from "react-router-dom";
 // import TextareaAutosize from "react-textarea-autosize";
 import BookGenerator from "../../components/BookGenerator(v2)";
@@ -31,13 +31,13 @@ const ChapterDetails = z.object({
   sections: z.array(SectionDetails),
 });
 
-const ChaptersArray = z.array(ChapterDetails);
+// const ChaptersArray = z.array(ChapterDetails);
 
-const TableOfContents = z.object({
-  chapters: ChaptersArray,
-});
-type ChapterDetailsType = z.infer<typeof ChapterDetails>;
-type SectionDetailsType = z.infer<typeof SectionDetails>;
+// const TableOfContents = z.object({
+//   chapters: ChaptersArray,
+// });
+// type ChapterDetailsType = z.infer<typeof ChapterDetails>;
+// type SectionDetailsType = z.infer<typeof SectionDetails>;
 
 const FreeResponse = z.object({
   code: z.literal("FRQ"),
@@ -108,10 +108,10 @@ export type {
   ContentifiedChaptersArrayType,
 };
 
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
-});
+// const openai = new OpenAI({
+//   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+//   dangerouslyAllowBrowser: true,
+// });
 
 function Landing() {
   // const [topic, dispatchTopic] = useImmerReducer(topicReducer, "");
@@ -128,48 +128,23 @@ function Landing() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const completion = await openai.beta.chat.completions.parse({
-        model: "gpt-4o-2024-11-20",
-        messages: [
-          {
-            role: "developer",
-            content: "You are a course textbook writing expert",
-          },
-          {
-            role: "user",
-            content: `Generate the table of contents (include chapter and sections) for a textbook on ${topic}`,
-          },
-        ],
-        response_format: zodResponseFormat(
-          TableOfContents,
-          "table_of_contents",
-        ),
-      });
-
-      const data = completion.choices[0].message.parsed?.chapters;
-
-      const temp = data!.map((chapter: ChapterDetailsType, index: number) => {
-        return {
-          ...chapter,
-          number: index + 1,
-          sections: chapter.sections.map(
-            (section: SectionDetailsType, i: number) => {
-              return {
-                ...section,
-                number: i + 1,
-                content: {
-                  article: "",
-                  problems: [],
-                },
-              };
-            },
-          ),
-        };
-      });
-      dispatchChapters({ type: "initialize", payload: temp });
+      const res = await fetch(
+        "https://6xw3s23tbt7o4lno6btalgtacm0hmydk.lambda-url.us-west-1.on.aws/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ topic }),
+        },
+      );
+      if (!res.ok) {
+        throw new Error(`Request failed: ${res.status}`);
+      }
+      return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      dispatchChapters({ type: "initialize", payload: data.chapters });
       console.log("AI response successfully processed.");
+      console.log("AI response data:", data);
       (document.getElementById("my_modal") as HTMLDialogElement)?.showModal();
     },
     onError: (error: Error) => {

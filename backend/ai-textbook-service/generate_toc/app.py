@@ -1,3 +1,4 @@
+from copy import deepcopy
 import json
 import os
 from openai import OpenAI
@@ -37,23 +38,31 @@ def get_openai_api_key():
 
 
 def format_numbers(chapter: ChapterDetails, chapter_index: int):
-    """Formats chapter and section numbers to be zero-padded."""
-    chapter.number = chapter_index + 1
-    for section_index, section in enumerate(chapter.sections):
-        section.number = section_index + 1
-    return chapter
+    """Formats chapter and section numbers to be one-indexed."""
+    chapter["number"] = chapter_index + 1
+    for section_index, section in enumerate(chapter["sections"]):
+        section["number"] = section_index + 1
 
 
-def format_toc(toc: TableOfContents):
+def initialize_contents(chapter: ChapterDetails):
+    """initalizes the content of each section in a chapter."""
+    for section in chapter["sections"]:
+        section["content"] = {
+            "article": "",
+            "problems": [],
+        }
+
+
+def format_initialize_toc(toc: TableOfContents):
     """Formats the table of contents by zero-padding chapter and section numbers."""
-    for chapter_index, chapter in enumerate(toc.chapters):
+    for chapter_index, chapter in enumerate(toc["chapters"]):
         format_numbers(chapter, chapter_index)
-    return toc
+        initialize_contents(chapter)
 
 
 def lambda_handler(event, _):
     """
-    Lambda function handler to retrieve the OpenAI API key from AWS Secrets Manager.
+    Lambda function handler to generate a table of contents for a textbook based on a given topic.
     """
 
     try:
@@ -70,8 +79,9 @@ def lambda_handler(event, _):
             input=topic,
             text_format=TableOfContents,
         )
-        format_toc(response.output_parsed)
-        return {"statusCode": status_code, "body": response.output_parsed.model_dump()}
+        output_dict = deepcopy(response.output_parsed.model_dump(exclude_none=True))
+        format_initialize_toc(output_dict)
+        return {"statusCode": status_code, "body": output_dict}
     except Exception as e:
         # Send some context about this error to Lambda Logs
         print(e)
