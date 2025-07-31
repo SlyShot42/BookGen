@@ -5,21 +5,27 @@ from pydantic import BaseModel
 from myhelpers import get_openai_api_key
 
 
-OPENAI_MODEL = "o4-mini-2025-04-16"
+OPENAI_MODEL = "gpt-4.1"
 
 
 class SectionDetails(BaseModel):
+    """Model for section details in a chapter."""
+
     number: int
     title: str
 
 
 class ChapterDetails(BaseModel):
+    """Model for chapter details in a textbook."""
+
     number: int
     title: str
     sections: list[SectionDetails]
 
 
 class TableOfContents(BaseModel):
+    """Model for the table of contents of a textbook."""
+
     chapters: list[ChapterDetails]
 
 

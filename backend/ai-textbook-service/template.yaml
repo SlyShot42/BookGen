@@ -55,9 +55,41 @@ Resources:
           MaxAge: 0
           AllowCredentials: false
 
+  GenerateContentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: generate_content/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Layers:
+        - !Ref SharedHelpersLayer
+        - arn:aws:lambda:us-west-1:997803712105:layer:AWS-Parameters-and-Secrets-Lambda-Extension:18
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref SecretArn
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - http://localhost:5173
+            - https://main.d2xyu58sfma11c.amplifyapp.com
+          AllowMethods:
+            - POST
+          AllowHeaders:
+            - "*"
+          MaxAge: 0
+          AllowCredentials: false
+
 
 Outputs:
-  MyFunctionUrlEndpoint:
-      Description: "My Lambda Function URL Endpoint"
-      Value:
-        Fn::GetAtt: GenerateTOCFunctionUrl.FunctionUrl
+  GenerateTOCFunctionUrl:
+    Description: "Generate TOC Lambda Function URL Endpoint"
+    Value:
+      Fn::GetAtt: GenerateTOCFunctionUrl.FunctionUrl
+
+  GenerateContentFunctionUrl:
+    Description: "Generate Content Lambda Function URL Endpoint"  
+    Value:
+      Fn::GetAtt: GenerateContentFunctionUrl.FunctionUrl
