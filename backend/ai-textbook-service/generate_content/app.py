@@ -1,4 +1,5 @@
 import json
+from copy import deepcopy
 import re
 from typing import Literal, Union
 from openai import OpenAI
@@ -62,7 +63,7 @@ def format_problems(problems: list[Problem]) -> ProblemSet:
 
 def lambda_handler(event, _):
     """Lambda function handler to generate content for a textbook section based on a given topic and section title."""
-    openai_api_key = get_openai_api_key()
+    openai_api_key, _ = get_openai_api_key()
     client = OpenAI(api_key=openai_api_key)
 
     try:
@@ -112,7 +113,10 @@ def lambda_handler(event, _):
             text_format=ProblemSet,
             temperature=0.2,
         )
-        problems = generated_problems["problems"]
+        generated_problems_copy = deepcopy(
+            generated_problems.output_parsed.model_dump(exclude_none=True)
+        )
+        problems = generated_problems_copy["problems"]
         format_problems(problems)
         return {
             "statusCode": 200,
