@@ -6,7 +6,8 @@ from openai import OpenAI
 from pydantic import BaseModel
 from myhelpers import get_openai_api_key
 
-OPENAI_MODEL = "gpt-4.1"
+OPENAI_ARTICLE_MODEL = "gpt-5"
+OPENAI_PROBLEM_MODEL = "gpt-5-mini"
 
 
 class FreeResponse(BaseModel):
@@ -73,10 +74,10 @@ def lambda_handler(event, _):
         num_problems = body.get("numProblems", 2)
         # Your Lambda function logic here
         response = client.responses.create(
-            model=OPENAI_MODEL,
+            model=OPENAI_ARTICLE_MODEL,
             instructions="You are a course textbook content generation machine designed to output in markdown(surround inline latex with $..$ and display latex with $$..$$). Do not acknowledge or greet. Output the content only. Expand on information where appropriate. Do not include section title in reponse.",
             input=f"Generate the content of the section (do not include section title in reponse): \n{section_title}\n in the\n{topic}\n textbook.",
-            temperature=0.4,
+            # temperature=0.4,
         )
         print(f"Topic: {topic}, Section Title: {section_title}")
         article = response.output_text
@@ -103,7 +104,7 @@ def lambda_handler(event, _):
             }
         ]"""
         generated_problems = client.responses.parse(
-            model=OPENAI_MODEL,
+            model=OPENAI_PROBLEM_MODEL,
             instructions=f"""You are a course textbook problem generation machine designed to output in JSON in the format: \n
             {examples}
             \nUse markdown(surround any inline latex math expressions with $..$ and display latex math expressions with $$..$$) for statement field. The setup field for any CODE problem is to contain only setup code for the problem and nothing else. For the code problem statement, include any and all necessary information for the user to understand the problem along with the functions and variables to be used in the testcases. Ensure that correct code generated adheres strictly to the structure layed out in the setup code. Similarly, ensure that each testcase can run independently when appended to the correct code individually. LEAVE NO ROOM FOR AMBIGUITY.""",
@@ -111,7 +112,7 @@ def lambda_handler(event, _):
             \nreferencing the section content\n
             {article}""",
             text_format=ProblemSet,
-            temperature=0.2,
+            # temperature=0.2,
         )
         generated_problems_copy = deepcopy(
             generated_problems.output_parsed.model_dump(exclude_none=True)
@@ -120,8 +121,12 @@ def lambda_handler(event, _):
         format_problems(problems)
         return {
             "statusCode": 200,
-            "body": json.dumps({"article": article, "problems": problems}),
+            "body": {"article": article, "problems": problems},
         }
     except Exception as e:
-        print(f"Error: {e}")
-        return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
+        # Send some context about this error to Lambda Logs
+        print(e)
+        return {
+            "statusCode": 500,
+            "body": {"message": "API Call Failed", "error": str(e)},
+        }

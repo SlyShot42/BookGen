@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from myhelpers import get_openai_api_key
 
 
-OPENAI_MODEL = "gpt-4.1"
+OPENAI_MODEL = "gpt-5-mini"
 
 
 class SectionDetails(BaseModel):
@@ -79,5 +79,5 @@ def lambda_handler(event, _):
         print(e)
         return {
             "statusCode": 500,
-            "body": json.dumps({"message": "API Call Failed", "error": str(e)}),
+            "body": {"message": "API Call Failed", "error": str(e)},
         }
