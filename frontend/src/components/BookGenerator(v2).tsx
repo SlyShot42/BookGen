@@ -101,8 +101,29 @@ function BookGenerator({ selections }: { selections?: [number, number][] }) {
     console.log(`${chapterIndex + 1}.${sectionIndex + 1}`);
     const numProblems = 2;
 
-    const res = await fetch(
-      "https://kzaivdzthdp7fqhblzcmrpdevi0pgxmv.lambda-url.us-west-1.on.aws/",
+    const articleRes = await fetch(
+      "https://62dlr6mxyr77u2o6mzglwarbxq0tybyq.lambda-url.us-west-1.on.aws/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: topic,
+          sectionTitle: sectionTitle,
+        }),
+      },
+    );
+    if (!articleRes.ok) {
+      throw new Error(
+        `Failed to generate content: ${articleRes.status} ${articleRes.statusText}`,
+      );
+    }
+    const articleJSON = await articleRes.json();
+    const article = articleJSON.article;
+
+    const problemsRes = await fetch(
+      "https://csfwli2eiwyjgi5v37c76ya75u0ndgfz.lambda-url.us-west-1.on.aws/",
       {
         method: "POST",
         headers: {
@@ -112,19 +133,20 @@ function BookGenerator({ selections }: { selections?: [number, number][] }) {
           topic: topic,
           sectionTitle: sectionTitle,
           numProblems: numProblems,
+          article: article,
         }),
       },
     );
-    if (!res.ok) {
+    if (!problemsRes.ok) {
       throw new Error(
-        `Failed to generate content: ${res.status} ${res.statusText}`,
+        `Failed to generate problems: ${problemsRes.status} ${problemsRes.statusText}`,
       );
     }
-    const response = await res.json();
-
+    const problemsJSON = await problemsRes.json();
+    const problems = problemsJSON.problems;
     const content: ContentDetailsType = {
-      article: response.article,
-      problems: response.problems,
+      article: article,
+      problems: problems,
     };
 
     return content;

@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import requests
 
 OPENAI_API_KEY_ARN = os.environ["OPENAI_API_KEY_ARN"]
@@ -15,3 +16,14 @@ def get_openai_api_key():
     secret_string = json.loads(response.text)["SecretString"]
     secret = json.loads(secret_string)["OPENAI_API_KEY"]
     return secret, response.status_code
+
+
+def markdown_formatting(text: str) -> str:
+    """Converts LaTeX delimiters to markdown format."""
+    # Replace \[...\] with $$...$$
+    text = re.sub(r"\\\[(.*?)\\\]", r"$$\1$$", text, flags=re.DOTALL)
+
+    # Replace \(...\) with $...$
+    text = re.sub(r"\\\((.*?)\\\)", r"$\1$", text)
+
+    return text

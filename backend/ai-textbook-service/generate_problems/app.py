@@ -4,10 +4,9 @@ import re
 from typing import Literal, Union
 from openai import OpenAI
 from pydantic import BaseModel
-from myhelpers import get_openai_api_key
+from myhelpers import get_openai_api_key, markdown_formatting
 
-OPENAI_ARTICLE_MODEL = "gpt-5"
-OPENAI_PROBLEM_MODEL = "gpt-5-mini"
+OPENAI_MODEL = "gpt-5-mini"
 
 
 class FreeResponse(BaseModel):
@@ -39,17 +38,6 @@ class ProblemSet(BaseModel):
     problems: list[Problem]
 
 
-def markdown_formatting(text: str) -> str:
-    """Converts LaTeX delimiters to markdown format."""
-    # Replace \[...\] with $$...$$
-    text = re.sub(r"\\\[(.*?)\\\]", r"$$\1$$", text, flags=re.DOTALL)
-
-    # Replace \(...\) with $...$
-    text = re.sub(r"\\\((.*?)\\\)", r"$\1$", text)
-
-    return text
-
-
 def format_problems(problems: list[Problem]) -> ProblemSet:
     """Formats each problem's text content into markdown."""
     for problem in problems:
@@ -72,17 +60,10 @@ def lambda_handler(event, _):
         topic = body["topic"]
         section_title = body["sectionTitle"]
         num_problems = body.get("numProblems", 2)
+        article = body.get("article", "")
         # Your Lambda function logic here
-        response = client.responses.create(
-            model=OPENAI_ARTICLE_MODEL,
-            instructions="You are a course textbook content generation machine designed to output in markdown(surround inline latex with $..$ and display latex with $$..$$). Do not acknowledge or greet. Output the content only. Expand on information where appropriate. Do not include section title in reponse.",
-            input=f"Generate the content of the section (do not include section title in reponse): \n{section_title}\n in the\n{topic}\n textbook.",
-            # temperature=0.4,
-        )
+
         print(f"Topic: {topic}, Section Title: {section_title}")
-        article = response.output_text
-        article = markdown_formatting(article)
-        print(f"Generated article: {article}")
         examples = """Problems: [
             {
                 "code": "MCQ",
@@ -104,7 +85,7 @@ def lambda_handler(event, _):
             }
         ]"""
         generated_problems = client.responses.parse(
-            model=OPENAI_PROBLEM_MODEL,
+            model=OPENAI_MODEL,
             instructions=f"""You are a course textbook problem generation machine designed to output in JSON in the format: \n
             {examples}
             \nUse markdown(surround any inline latex math expressions with $..$ and display latex math expressions with $$..$$) for statement field. The setup field for any CODE problem is to contain only setup code for the problem and nothing else. For the code problem statement, include any and all necessary information for the user to understand the problem along with the functions and variables to be used in the testcases. Ensure that correct code generated adheres strictly to the structure layed out in the setup code. Similarly, ensure that each testcase can run independently when appended to the correct code individually. LEAVE NO ROOM FOR AMBIGUITY.""",
@@ -119,9 +100,10 @@ def lambda_handler(event, _):
         )
         problems = generated_problems_copy["problems"]
         format_problems(problems)
+        print(f"Generated problems: {problems}")
         return {
             "statusCode": 200,
-            "body": {"article": article, "problems": problems},
+            "body": {"problems": problems},
         }
     except Exception as e:
         # Send some context about this error to Lambda Logs
