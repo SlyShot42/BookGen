@@ -71,7 +71,8 @@ You can test a single function by invoking it directly with a test event. An eve
 Run functions locally and invoke them with the `sam local invoke` command.
 
 ```bash
-sam local invoke GenerateTOCFunction --event events/event.json
+sam local invoke GenerateTOCFunction --event events/toc_event.json
+sam local invoke GenerateContentFunction --event events/content_event.json
 ```
 
 You can also run the Lambda in a local service with `sam local start-lambda`:
@@ -102,7 +103,9 @@ After you have deployed your application, you can remotely invoke your Lambda fu
 Invoke functions remotely with the `sam remote invoke` command.
 
 ```bash
-sam remote invoke GenerateTOCFunction --event-file events/event.json --stack-name BookGenStack
+sam remote invoke GenerateTOCFunction --event-file events/toc_event.json --stack-name BookGenStack
+sam remote invoke GenerateArticleFunction --event-file events/article_event.json --stack-name BookGenStack
+sam remote invoke GenerateProblemsFunction --event-file events/problems_event.json --stack-name BookGenStack
 ```
 
 You can also open the Function URL printed after deployment to invoke your deployed Lambda function.

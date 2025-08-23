@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from myhelpers import get_openai_api_key
 
 
-OPENAI_MODEL = "gpt-5-mini"
+OPENAI_MODEL = "gpt-4.1"
 
 
 class SectionDetails(BaseModel):
