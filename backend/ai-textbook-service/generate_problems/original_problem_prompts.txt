@@ -1,0 +1,7 @@
+{
+    "code": "CODE",
+    "statement": "Complete the function add(a,b) that returns the sum of two numbers",
+    "setup": "def add(a, b): \\n\\t# your code here",
+    "correctCode": "def add(a, b): \\n\\treturn a + b",
+    "testCases": ["print(add(1, 2) == 3)", "print(add(-1, 1) == 0)", "print(add(0, 0) == 0)"]
+}

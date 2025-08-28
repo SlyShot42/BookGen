@@ -15,12 +15,12 @@ class FreeResponse(BaseModel):
     answer: str
 
 
-class Code(BaseModel):
-    code: Literal["CODE"]
-    statement: str
-    setup: str
-    correctCode: str
-    testCases: list[str]
+# class Code(BaseModel):
+#     code: Literal["CODE"]
+#     statement: str
+#     setup: str
+#     correctCode: str
+#     testCases: list[str]
 
 
 class MultipleChoice(BaseModel):
@@ -31,7 +31,11 @@ class MultipleChoice(BaseModel):
 
 
 # Union type for any problem
-Problem = Union[MultipleChoice, FreeResponse, Code]
+Problem = Union[
+    MultipleChoice,
+    FreeResponse,
+    # Code
+]
 
 
 class ProblemSet(BaseModel):
@@ -75,21 +79,14 @@ def lambda_handler(event, _):
                 "code": "FRQ",
                 "statement": "Describe Elon Musk.",
                 "answer": "Elon Musk (b. 28 June 1971) is a South-African-born American entrepreneur and engineer best known as the CEO of Tesla, founder & chief engineer of SpaceX, and owner of X Corp. (formerly Twitter); he has also co-founded ventures such as Neuralink, The Boring Company and xAI."
-            },
-            {
-                "code": "CODE",
-                "statement": "Complete the function add(a,b) that returns the sum of two numbers",
-                "setup": "def add(a, b): \\n\\t# your code here",
-                "correctCode": "def add(a, b): \\n\\treturn a + b",
-                "testCases": ["print(add(1, 2) == 3)", "print(add(-1, 1) == 0)", "print(add(0, 0) == 0)"]
             }
         ]"""
         generated_problems = client.responses.parse(
             model=OPENAI_MODEL,
             instructions=f"""You are a course textbook problem generation machine designed to output in JSON in the format: \n
             {examples}
-            \nUse markdown(surround any inline latex math expressions with $..$ and display latex math expressions with $$..$$) for statement field. The setup field for any CODE problem is to contain only setup code for the problem and nothing else. For the code problem statement, include any and all necessary information for the user to understand the problem along with the functions and variables to be used in the testcases. Ensure that correct code generated adheres strictly to the structure layed out in the setup code. Similarly, ensure that each testcase can run independently when appended to the correct code individually. LEAVE NO ROOM FOR AMBIGUITY.""",
-            input=f"""Generate exactly {num_problems} problems of random types for the section: \n ${section_title} \n in the ${topic} textbook.
+            \nUse markdown(surround any inline latex math expressions with $..$ and display latex math expressions with $$..$$) for statement and options/answer field respectively. Generate the exact number of problems requested by the user. Make sure the content of the problems' is relevant to the user-provided section's title, book topic, and article. Ensure that problem types are random. Do not greet or acknowledge the user in both the problem statement and answer.""",
+            input=f"""Generate exactly {num_problems} problems for the section: \n ${section_title} \n in the ${topic} textbook.
             \nreferencing the section content\n
             {article}""",
             text_format=ProblemSet,
