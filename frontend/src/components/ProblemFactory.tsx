@@ -30,7 +30,14 @@ function ProblemFactory({
             problemIndex={problemIndex}
           />
         )}
-        {problem.code === "FRQ" && <FreeResponseProblem problem={problem} />}
+        {problem.code === "FRQ" && (
+          <FreeResponseProblem
+            problem={problem}
+            chapterIndex={chapterIndex}
+            sectionIndex={sectionIndex}
+            problemIndex={problemIndex}
+          />
+        )}
         {problem.code === "CODE" && <CodeProblem problem={problem} />}
       </div>
     </div>

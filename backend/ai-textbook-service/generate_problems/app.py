@@ -6,7 +6,7 @@ from openai import OpenAI
 from pydantic import BaseModel
 from myhelpers import get_openai_api_key, markdown_formatting
 
-OPENAI_MODEL = "gpt-5-nano"
+OPENAI_MODEL = "gpt-4.1"
 
 
 class FreeResponse(BaseModel):
@@ -85,7 +85,7 @@ def lambda_handler(event, _):
             model=OPENAI_MODEL,
             instructions=f"""You are a course textbook problem generation machine designed to output in JSON in the format: \n
             {examples}
-            \nUse markdown(surround any inline latex math expressions with $..$ and display latex math expressions with $$..$$) for statement and options/answer field respectively. Generate the exact number of problems requested by the user. Make sure the content of the problems' is relevant to the user-provided section's title, book topic, and article. Ensure that problem types are random. Do not greet or acknowledge the user in both the problem statement and answer.""",
+            \nUse markdown (surround any inline latex math expressions with $..$ and display latex math expressions with $$..$$) for statement and options/answer field respectively. Generate the exact number of problems requested by the user. Make sure the content of the problems' is relevant to the user-provided section's title, book topic, and article. Ensure that problem types are random. Do not greet or acknowledge the user in both the problem statement and answer.""",
             input=f"""Generate exactly {num_problems} problems for the section: \n ${section_title} \n in the ${topic} textbook.
             \nreferencing the section content\n
             {article}""",

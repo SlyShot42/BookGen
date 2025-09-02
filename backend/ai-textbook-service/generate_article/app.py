@@ -2,7 +2,7 @@ import json
 from openai import OpenAI
 from myhelpers import get_openai_api_key, markdown_formatting
 
-OPENAI_MODEL = "gpt-5-mini"
+OPENAI_MODEL = "gpt-4.1"
 
 
 def lambda_handler(event, _):

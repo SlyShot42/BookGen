@@ -23,6 +23,7 @@ function MultipleChoiceProblem({
     })),
   );
 
+  console.log(problem.statement);
   const [attemptsRemaining, dispatchAttemptsRemaining] = useImmerReducer(
     attemptsRemainingReducer,
     2,
@@ -68,7 +69,7 @@ function MultipleChoiceProblem({
   return (
     <form
       className="size-full"
-      id={`problem-from-${chapterIndex}.${sectionIndex}.${problemIndex}`}
+      id={`problem-${chapterIndex}.${sectionIndex}.${problemIndex}`}
       onSubmit={(e) => handleFormSubmit(e)}
     >
       <ul className="menu not-prose w-full p-0">
