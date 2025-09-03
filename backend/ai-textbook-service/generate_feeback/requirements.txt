@@ -1,0 +1,4 @@
+requests
+openai
+pydantic
+typing_extensions
