@@ -61,7 +61,7 @@ function FreeResponseProblem({
         <div className="card-body">
           <h2 className="card-title">AI Feedback:</h2>
           <p>{dummyAIResponse}</p>
-          <div role="alert" className="alert alert-success w-full">
+          <div role="alert" className="alert alert-success alert-soft w-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6 shrink-0 stroke-current"
