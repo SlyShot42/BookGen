@@ -1,0 +1,4 @@
+{
+    "body": "{\"topic\": \"Mathematical Physics and Fluid Dynamics\", \"problemStatement\": \"What is the derivative of sin(x)?\", \"correctAnswer\": \"cos(x)\", \"userAnswer\": \"e^x\"}",
+    "isBase64Encoded": false
+}
