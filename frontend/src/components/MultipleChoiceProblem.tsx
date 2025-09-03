@@ -113,8 +113,6 @@ function MultipleChoiceProblem({
       <div className="mt-1.5 w-full">
         <button
           type="submit"
-          name="action"
-          value="submit"
           className="btn btn-outline btn-primary btn-block"
           disabled={submitDisabled}
         >
