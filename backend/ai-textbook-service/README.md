@@ -106,6 +106,7 @@ Invoke functions remotely with the `sam remote invoke` command.
 sam remote invoke GenerateTOCFunction --event-file events/toc_event.json --stack-name BookGenStack
 sam remote invoke GenerateArticleFunction --event-file events/article_event.json --stack-name BookGenStack
 sam remote invoke GenerateProblemsFunction --event-file events/problems_event.json --stack-name BookGenStack
+sam remote invoke GenerateFeedbackFunction --event-file events/feedback_event.json --stack-name BookGenStack
 ```
 
 You can also open the Function URL printed after deployment to invoke your deployed Lambda function.

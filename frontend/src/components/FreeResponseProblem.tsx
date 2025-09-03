@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { FreeResponseType } from "../pages/landing/Landing";
 import MyMarkdown from "./MyMarkdown";
 import { useImmerReducer } from "use-immer";
+import { useTopic } from "../TopicUtils";
 
 function FreeResponseProblem({
   problem,
@@ -27,15 +28,20 @@ function FreeResponseProblem({
     userAnswerReducer,
     "",
   );
-
+  const topic = useTopic();
   const mutation = useMutation({
     mutationFn: async () => {
       const res = await fetch(
-        "https://6xw3s23tbt7o4lno6btalgtacm0hmydk.lambda-url.us-west-1.on.aws/",
+        "https://irrdfl62oxriocu5s3geotbfnq0nkwdg.lambda-url.us-west-1.on.aws/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userAnswer }),
+          body: JSON.stringify({
+            topic: topic,
+            problemStatement: problem.statement,
+            correctAnswer: problem.answer,
+            userAnswer: userAnswer,
+          }),
         },
       );
       if (!res.ok) {
