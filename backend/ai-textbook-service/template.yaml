@@ -109,10 +109,10 @@ Resources:
           MaxAge: 0
           AllowCredentials: false
 
-  GenerateFeedbackFunction:
+  GraderFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: generate_feedback/
+      CodeUri: grader/
       Handler: app.lambda_handler
       Runtime: python3.12
       Architectures:
@@ -152,7 +152,7 @@ Outputs:
     Value:
       Fn::GetAtt: GenerateProblemsFunctionUrl.FunctionUrl
 
-  GenerateFeedbackFunctionUrl:
-    Description: "Generate Feedback Lambda Function URL Endpoint"
+  GraderFunctionUrl:
+    Description: "Grader Lambda Function URL Endpoint"
     Value:
-      Fn::GetAtt: GenerateFeedbackFunctionUrl.FunctionUrl
+      Fn::GetAtt: GraderFunctionUrl.FunctionUrl

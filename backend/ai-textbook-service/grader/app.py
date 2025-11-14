@@ -13,12 +13,14 @@ class Grade(BaseModel):
     score: int
 
 
-def format_grade_output(grade: Grade):
-    return {
-        "feedback": markdown_formatting(grade["feedback"]),
-        "passed": grade["score"] >= 7,
-        "score": grade["score"],
-    }
+def format_grade_output(grade_dict: dict):
+    # return {
+    #     "feedback": markdown_formatting(grade["feedback"]),
+    #     "passed": grade["score"] >= 7,
+    #     "score": grade["score"],
+    # }
+    grade_dict["feedback"] = markdown_formatting(grade_dict["feedback"])
+    grade_dict["passed"] = grade_dict["score"] >= 7
 
 
 def lambda_handler(event, _):
@@ -51,8 +53,8 @@ def lambda_handler(event, _):
             text_format=Grade,
         )
         output_dict = deepcopy(response.output_parsed.model_dump(exclude_none=True))
-        formatted_response = format_grade_output(output_dict)
-        return {"statusCode": status_code, "body": formatted_response}
+        format_grade_output(output_dict)
+        return {"statusCode": status_code, "body": output_dict}
     except Exception as e:
         # Send some context about this error to Lambda Logs
         print(e)

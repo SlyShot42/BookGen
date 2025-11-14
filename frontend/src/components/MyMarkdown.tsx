@@ -14,9 +14,13 @@ function MyMarkdown({
     <Markdown
       {...props}
       remarkPlugins={[remarkMath, remarkGfm]}
-      rehypePlugins={[rehypeKatex]}
+      rehypePlugins={[
+        [rehypeKatex, { macros: { "\\oldsymbol": "\\boldsymbol{#1}" } }],
+      ]}
       children={content}
       components={{
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        br: () => <>{` `}</>,
         code(props) {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { children, className, node, ref, ...rest } = props;

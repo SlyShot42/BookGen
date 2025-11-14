@@ -44,6 +44,6 @@ def markdown_formatting(text: str) -> str:
     text = re.sub(r"\\\((.*?)\\\)", r"$\1$", text)
 
     # Convert literal \n to actual newlines (fix the problem statement formatting)
-    text = text.replace("\\n", "\n")
+    text = re.sub(r"\\n(?![A-Za-z])", "\n", text)
 
     return text

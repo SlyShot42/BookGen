@@ -21,7 +21,7 @@ function ProblemFactory({
         Problem {chapterIndex + 1}.{sectionIndex + 1}.{problemIndex + 1}:{" "}
         {problem.code}
       </div>
-      <div className="collapse-content">
+      <div className="collapse-content min-w-0">
         {problem.code === "MCQ" && (
           <MultipleChoiceProblem
             problem={problem}

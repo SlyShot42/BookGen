@@ -3,6 +3,7 @@ import { FreeResponseType } from "../pages/landing/Landing";
 import MyMarkdown from "./MyMarkdown";
 import { useImmerReducer } from "use-immer";
 import { useTopic } from "../TopicUtils";
+import "./freeresponse.css";
 
 function FreeResponseProblem({
   problem,
@@ -23,7 +24,7 @@ function FreeResponseProblem({
   const submitDisabled = attemptsRemaining === 0;
   // const dummyAIResponse =
   //   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-
+  console.log(problem.answer);
   const [userAnswer, dispatchUserAnswer] = useImmerReducer(
     userAnswerReducer,
     "",
@@ -32,7 +33,7 @@ function FreeResponseProblem({
   const mutation = useMutation({
     mutationFn: async () => {
       const res = await fetch(
-        "https://irrdfl62oxriocu5s3geotbfnq0nkwdg.lambda-url.us-west-1.on.aws/",
+        "https://hhrbzbiuqlquprmi4i5yfb4mv40qzqug.lambda-url.us-west-1.on.aws/",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -77,7 +78,7 @@ function FreeResponseProblem({
     >
       <MyMarkdown
         content={problem.statement}
-        className="prose lg:prose-p:mt-0 w-full max-w-none"
+        className="prose lg:prose-p:mt-0 w-full max-w-none min-w-0 overflow-x-auto"
       />
       <textarea
         className="textarea textarea-neutral textarea-md text-neutral mt-1 h-24 w-full resize-none font-mono font-bold md:h-62 lg:mt-0 lg:h-52 landscape:mt-1 landscape:h-24"
@@ -93,7 +94,9 @@ function FreeResponseProblem({
           name="action"
           value="submit"
           className="btn btn-outline btn-primary btn-block"
-          disabled={submitDisabled || userAnswer.trim() === ""}
+          disabled={
+            submitDisabled || userAnswer.trim() === "" || mutation.isPending
+          }
         >
           Submit
           <svg
@@ -120,26 +123,26 @@ function FreeResponseProblem({
         <>
           <div className="divider my-1"></div>
           <div className="card bg-base-100 card-md lg:card-lg w-full shadow-sm">
-            <div className="card-body">
+            <div className="card-body min-w-0 overflow-x-hidden">
               {attemptsRemaining > 0 ? (
                 <>
                   <h2 className="card-title">AI Feedback:</h2>
-                  <p>
+                  <div className="frp-md w-full min-w-0 overflow-x-auto">
                     <MyMarkdown
                       content={mutation.data.feedback}
                       className="prose lg:prose-p:mt-0 w-full max-w-none"
                     />
-                  </p>
+                  </div>
                 </>
               ) : (
                 <>
                   <h2 className="card-title">Answer:</h2>
-                  <p>
+                  <div className="frp-md w-full min-w-0 overflow-x-auto">
                     <MyMarkdown
                       content={problem.answer}
                       className="prose lg:prose-p:mt-0 w-full max-w-none"
                     />
-                  </p>
+                  </div>
                 </>
               )}
               <div
@@ -180,10 +183,13 @@ function FreeResponseProblem({
                   </svg>
                 )}
                 <span>
-                  <strong>
+                  <strong className="text-inherit!">
                     {mutation.data.passed ? "Passed!" : "Failed!"}
                   </strong>{" "}
-                  Your score is: <strong>{mutation.data.score}/10</strong>
+                  Your score is:{" "}
+                  <strong className="text-inherit!">
+                    {mutation.data.score}/10
+                  </strong>
                 </span>
               </div>
             </div>
